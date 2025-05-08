@@ -6,7 +6,8 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.string('id').defaultTo(this.raw('nanoid()')).primary().unique()
-      table.string('customer_id').notNullable()
+      table.string('user_id').references('id').inTable('users').onDelete('CASCADE')
+      table.string('customer_id').references('id').inTable('customers').onDelete('CASCADE')
       table.string('title').notNullable()
       table.string('invoice_number').notNullable()
       table.string('currency').notNullable()

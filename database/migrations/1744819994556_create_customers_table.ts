@@ -17,7 +17,7 @@ export default class extends BaseSchema {
       table.string('country').notNullable()
       table.string('business_name')
       table.string('business_address')
-
+      table.string('user_id').references('id').inTable('users').onDelete('CASCADE')
       table.index('email')
 
       table.timestamp('created_at', { useTz: true })
