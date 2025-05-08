@@ -42,6 +42,7 @@ router
 
     router
       .group(() => {
+        router.get('/dashboard', [JobsController, 'dashboard'])
         router.post('/', [JobsController, 'createJob'])
         router.get('/', [JobsController, 'getAll'])
         router.put('/:id', [JobsController, 'update'])
