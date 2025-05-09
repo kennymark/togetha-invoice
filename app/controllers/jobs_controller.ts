@@ -25,7 +25,7 @@ export default class JobsController {
       Job.query().where('status', 'completed').getCount(),
       Job.query().where('status', 'pending').getCount(),
     ])
-    return { pendingJobs, completedJobs }
+    return { pendingJobs: pendingJobs.total, completedJobs: completedJobs.total }
   }
 
   async getAll({ request }: HttpContext) {
