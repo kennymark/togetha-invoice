@@ -22,6 +22,6 @@ export default class DashboardController {
       .orWhere('status', 'overdue')
       .getCount()
 
-    return { totalEarnings, activeJobs, unpaidInvoices }
+    return { totalEarnings, activeJobs: activeJobs.total, unpaidInvoices: unpaidInvoices.total }
   }
 }

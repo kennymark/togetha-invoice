@@ -23,7 +23,7 @@ export default class InvoicesController {
   async dashboard() {
     const totalInvoices = await Invoice.query().getCount()
     const overdueInvoices = await Invoice.query().where('due_date', '<', new Date()).getCount()
-    return { totalInvoices, overdueInvoices }
+    return { totalInvoices: totalInvoices.total, overdueInvoices: overdueInvoices.total }
   }
 
   async getAll({ request }: HttpContext) {
