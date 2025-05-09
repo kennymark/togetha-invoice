@@ -19,12 +19,13 @@ const InvoicesController = () => import('#controllers/invoices_controller')
 const UsersController = () => import('#controllers/users_controller')
 router.on('/').renderInertia('home')
 
+router.post('api/v1/users', [UsersController, 'create'])
+router.post('api/v1/users/login', [UsersController, 'apiLogin'])
+
 router
   .group(() => {
     router
       .group(() => {
-        router.post('/', [UsersController, 'create'])
-        router.post('/login', [UsersController, 'apiLogin'])
         router.get('/me', [UsersController, 'me'])
         router.put('/:id', [UsersController, 'update'])
         router.delete('/:id', [UsersController, 'delete'])
@@ -33,8 +34,9 @@ router
     router
       .group(() => {
         router.get('/all', [CustomersController, 'getAll'])
-        router.get('/dashboard', [CustomersController, 'dashboard'])
+        router.get('/stats', [CustomersController, 'stats'])
         router.post('/', [CustomersController, 'createCustomer'])
+        router.get('/:id', [CustomersController, 'getCustomer'])
         router.put('/:id', [CustomersController, 'update'])
         router.delete('/:id', [CustomersController, 'delete'])
       })

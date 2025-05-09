@@ -38,9 +38,14 @@ export default class CustomersController {
     return customers
   }
 
-  async dashboard() {
+  async stats() {
     const totalCustomers = await Customer.query().getCount()
     return { totalCustomers: totalCustomers.total }
+  }
+
+  async getCustomer({ params }: HttpContext) {
+    const customer = await Customer.findOrFail(params.id)
+    return customer
   }
 
   async update({ request, params }: HttpContext) {
