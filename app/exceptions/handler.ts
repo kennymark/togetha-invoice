@@ -49,6 +49,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     }
 
+    if (error.code === 'E_AUTHORIZATION_FAILURE') {
+      return ctx.response.status(403).send({
+        error: 'You are not authorized to perform this action',
+        type: 'auth',
+      })
+    }
+
     if (error.code === 'E_INVALID_CREDENTIALS') {
       return response.unauthorized({ error: 'Your email or password is incorrect' })
     }

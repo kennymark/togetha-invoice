@@ -22,7 +22,7 @@ export default class CustomersController {
     }
   }
 
-  async getAll({ request }: HttpContext) {
+  async getAll({ auth, request }: HttpContext) {
     const {
       page = 1,
       perPage = 10,
@@ -32,6 +32,7 @@ export default class CustomersController {
       sortOrder = 'desc',
     } = await validateQueryParams(request.qs())
     const customers = await Customer.query()
+      .where('user_id', auth.user!.id)
       .betweenCreatedDates(startDate, endDate)
       .sortBy(sortBy, sortOrder)
       .paginate(page, perPage)
@@ -48,16 +49,18 @@ export default class CustomersController {
     return customer
   }
 
-  async update({ request, params }: HttpContext) {
+  async update({ request, params, bouncer }: HttpContext) {
     const body = await request.validateUsing(updateCustomerValidator)
     const customer = await Customer.findOrFail(params.id)
+    await bouncer.authorize('ownsEntity', customer)
     customer.merge(body)
     await customer.save()
     return { message: 'Customer updated successfully' }
   }
 
-  async delete({ params }: HttpContext) {
+  async delete({ params, bouncer }: HttpContext) {
     const customer = await Customer.findOrFail(params.id)
+    await bouncer.authorize('ownsEntity', customer)
     await customer.delete()
     return { message: 'Customer deleted successfully' }
   }

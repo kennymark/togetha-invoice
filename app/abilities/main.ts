@@ -16,3 +16,19 @@
  * Delete the following ability to start from
  * scratch
  */
+import type User from '#models/user'
+import { Bouncer } from '@adonisjs/bouncer'
+
+export const canMakeChanges = Bouncer.ability((user: User, entity: any) => {
+  if (user.id === entity.userId) {
+    return true
+  }
+  return false
+})
+
+export const ownsEntity = Bouncer.ability((user: User, entity: any) => {
+  if (entity.userId === user.id) {
+    return true
+  }
+  return false
+})

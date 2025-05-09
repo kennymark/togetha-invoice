@@ -26,7 +26,7 @@ export default class InvoicesController {
     return { totalInvoices: totalInvoices.total, overdueInvoices: overdueInvoices.total }
   }
 
-  async getAll({ request }: HttpContext) {
+  async getAll({ auth, request }: HttpContext) {
     const {
       page = 1,
       perPage = 10,
@@ -36,6 +36,7 @@ export default class InvoicesController {
       sortOrder = 'desc',
     } = await validateQueryParams(request.qs())
     const invoices = await Invoice.query()
+      .where('user_id', auth.user!.id)
       .betweenCreatedDates(startDate, endDate)
       .sortBy(sortBy, sortOrder)
       .paginate(page, perPage)
@@ -47,15 +48,18 @@ export default class InvoicesController {
     return invoice
   }
 
-  async update({ request, params }: HttpContext) {
+  async update({ request, params, bouncer }: HttpContext) {
     const body = await request.validateUsing(updateInvoiceValidator)
     const invoice = await Invoice.findOrFail(params.id)
+    await bouncer.authorize('ownsEntity', invoice)
     invoice.merge(body)
     await invoice.save()
+    return { message: 'Invoice updated successfully' }
   }
 
-  async delete({ params }: HttpContext) {
+  async delete({ params, bouncer }: HttpContext) {
     const invoice = await Invoice.findOrFail(params.id)
+    await bouncer.authorize('ownsEntity', invoice)
     await invoice.delete()
     return { message: 'Invoice deleted successfully' }
   }
