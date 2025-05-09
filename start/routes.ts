@@ -17,7 +17,7 @@ const JobsController = () => import('#controllers/jobs_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
 const InvoicesController = () => import('#controllers/invoices_controller')
 const UsersController = () => import('#controllers/users_controller')
-// router.on('/').renderInertia('home')
+router.on('/').renderInertia('home')
 
 router
   .group(() => {
@@ -42,6 +42,7 @@ router
 
     router
       .group(() => {
+        router.get('/dashboard', [JobsController, 'dashboard'])
         router.post('/', [JobsController, 'createJob'])
         router.get('/', [JobsController, 'getAll'])
         router.put('/:id', [JobsController, 'update'])
@@ -72,7 +73,7 @@ router
     })
   })
   .prefix('api/v1')
-//.middleware(middleware.auth())
+  .middleware(middleware.auth())
 
 router.get('/swagger', async () => {
   return AutoSwagger.default.docs(router.toJSON(), swagger)

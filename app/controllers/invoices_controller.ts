@@ -5,11 +5,11 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class InvoicesController {
-  async createInvoice({ request, logger }: HttpContext) {
+  async createInvoice({ auth, request, logger }: HttpContext) {
     const trx = await db.transaction()
     try {
       const body = await request.validateUsing(createInvoiceValidator)
-      await Invoice.create(body, { client: trx })
+      await Invoice.create({ ...body, userId: auth.user?.id }, { client: trx })
       await trx.commit()
       logger.info(`Invoice created: ${body.title}`)
       return { message: 'Invoice created successfully' }

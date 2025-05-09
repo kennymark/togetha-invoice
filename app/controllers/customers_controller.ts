@@ -5,13 +5,13 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class CustomersController {
-  async createCustomer({ request, response, logger }: HttpContext) {
+  async createCustomer({ auth, request, response, logger }: HttpContext) {
     const trx = await db.transaction()
     try {
       const body = await request.validateUsing(createCustomerValidator)
       const findCustomer = await Customer.query().where({ email: body.email }).first()
       if (findCustomer) return response.conflict({ error: 'Customer already exists' })
-      await Customer.create(body, { client: trx })
+      await Customer.create({ ...body, userId: auth.user?.id }, { client: trx })
       await trx.commit()
       logger.info(`Customer created: ${body.fullName}`)
       return { message: 'Customer created successfully' }
@@ -40,7 +40,6 @@ export default class CustomersController {
 
   async dashboard() {
     const totalCustomers = await Customer.query().getCount()
-    console.log('totalCustomers', totalCustomers)
     return { totalCustomers }
   }
 

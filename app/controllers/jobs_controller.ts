@@ -5,11 +5,11 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class JobsController {
-  async createJob({ request, logger }: HttpContext) {
+  async createJob({ auth, request, logger }: HttpContext) {
     const trx = await db.transaction()
     try {
       const body = await request.validateUsing(createJobValidator)
-      await Job.create(body, { client: trx })
+      await Job.create({ ...body, userId: auth.user?.id }, { client: trx })
       await trx.commit()
       logger.info(`Job created: ${body.title}`)
       return { message: 'Job created successfully' }
@@ -20,7 +20,13 @@ export default class JobsController {
     }
   }
 
-  async dashboard() {}
+  async dashboard() {
+    const [completedJobs, pendingJobs] = await Promise.all([
+      Job.query().where('status', 'completed').getCount(),
+      Job.query().where('status', 'pending').getCount(),
+    ])
+    return { pendingJobs, completedJobs }
+  }
 
   async getAll({ request }: HttpContext) {
     const {

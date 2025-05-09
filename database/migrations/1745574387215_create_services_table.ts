@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.decimal('unit_price', 10, 2).notNullable()
       table.integer('quantity').notNullable()
       table.decimal('total_price', 10, 2).notNullable()
-      table.string('invoice_id').notNullable()
+      table.string('invoice_id').references('id').inTable('invoices').onDelete('CASCADE')
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

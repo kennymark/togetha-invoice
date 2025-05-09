@@ -8,6 +8,7 @@ export default class Invoice extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
+  @column() declare userId: string
   @column() declare customerId: string
   @column() declare title: string
   @column() declare invoiceNumber: string
