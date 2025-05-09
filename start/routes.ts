@@ -67,6 +67,9 @@ router
       })
       .prefix('invoices')
     router.get('/health', [HealthChecksController])
+    router.get('/', () => {
+      return { message: 'Hello world' }
+    })
   })
   .prefix('api/v1')
 //.middleware(middleware.auth())
