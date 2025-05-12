@@ -15,6 +15,8 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/bouncer/commands'),
     () => import('@adonisjs/mail/commands'),
+    () => import('@tuyau/core/commands'),
+    () => import('@tuyau/openapi/commands'),
   ],
 
   /*
@@ -46,6 +48,9 @@ export default defineConfig({
     () => import('@adonisjs/redis/redis_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/mail/mail_provider'),
+    () => import('@tuyau/core/tuyau_provider'),
+    () => import('@tuyau/openapi/openapi_provider'),
+    () => import('#providers/postgis_provider'),
   ],
 
   /*

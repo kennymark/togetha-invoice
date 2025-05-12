@@ -17,7 +17,12 @@ const JobsController = () => import('#controllers/jobs_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
 const InvoicesController = () => import('#controllers/invoices_controller')
 const UsersController = () => import('#controllers/users_controller')
-router.on('/').renderInertia('home')
+
+// Marketing pages
+router.get('/', ({ inertia }) => inertia.render('landing/home/index'))
+router.get('/about', ({ inertia }) => inertia.render('landing/about/index'))
+router.get('/auth/login', ({ inertia }) => inertia.render('auth/login/index'))
+router.get('/auth/create-account', ({ inertia }) => inertia.render('auth/create-account/index'))
 
 router.post('api/v1/users', [UsersController, 'create'])
 router.post('api/v1/users/login', [UsersController, 'apiLogin'])
@@ -81,6 +86,6 @@ router.get('/swagger', async () => {
   return AutoSwagger.default.docs(router.toJSON(), swagger)
 })
 
-router.get('/docs', async () => {
-  return AutoSwagger.default.scalar('/swagger')
-})
+// router.get('/docs', async () => {
+//   return AutoSwagger.default.scalar('/swagger')
+// })

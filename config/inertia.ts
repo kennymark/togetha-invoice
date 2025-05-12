@@ -12,6 +12,21 @@ const inertiaConfig = defineConfig({
    */
   sharedData: {
     // user: (ctx) => ctx.inertia.always(() => ctx.auth.user),
+    session: (ctx) => ctx.session,
+    qs: (ctx) => ctx.request.qs(),
+    user: (ctx) => ({
+      id: ctx.auth.user?.id,
+      email: ctx.auth.user?.email,
+      fullName: ctx.auth.user?.fullName,
+      is2FaEnabled: ctx.auth.user?.is2faEnabled,
+      isActive: ctx.auth.user?.isActive,
+      metadata: ctx.auth.user?.metadata,
+      secondaryEmail: ctx.auth.user?.secondaryEmail,
+      contactNumber: ctx.auth.user?.contactNumber,
+      status: ctx.auth.user?.status,
+      createdAt: ctx.auth.user?.createdAt,
+      updatedAt: ctx.auth.user?.updatedAt,
+    }),
   },
 
   /**
@@ -19,8 +34,8 @@ const inertiaConfig = defineConfig({
    */
   ssr: {
     enabled: true,
-    entrypoint: 'inertia/app/ssr.tsx'
-  }
+    entrypoint: 'inertia/app/ssr.tsx',
+  },
 })
 
 export default inertiaConfig
