@@ -3,6 +3,10 @@ import { Input, Button, Card } from '~/components/ui'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormBase, FormField } from '~/components/reusable/base-form'
+import { getRoutePath } from '~/config/get-route-path'
+import { toast } from 'sonner'
+import { router } from '@inertiajs/react'
+import useInertiaMutation from '~/hooks/use-inertia-mutation'
 
 const formSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -26,28 +30,27 @@ function CreateAccount() {
     },
   })
 
-  // const { mutate: createAccount, isPending: isCreatingAccount } = useMutation({
-  //   mutationFn: (values: FormValues) => authService.createAccount(values),
-  //   onSuccess: () => {
-  //     toast.success('Account created successfully')
-  //     navigate(getRoutePath('auth_login'))
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.message)
-  //   },
-  // })
+  const { mutate: createAccount, isPending: isCreatingAccount } = useInertiaMutation({
+    url: 'api/v1/users',
+    method: 'post',
+    onSuccess: () => {
+      toast.success('Account created successfully')
+      router.visit(getRoutePath('auth_login'))
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
   const onSubmit = async (values: FormValues) => {
     console.log(values)
-    // createAccount(values)
+    createAccount(values)
   }
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 w-full'>
       <div className='sm:mx-auto sm:w-full sm:max-w-md'>
-        <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-          Create your account
-        </h2>
+        <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Create your account</h2>
       </div>
 
       <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
@@ -61,11 +64,7 @@ function CreateAccount() {
               <Input type='email' placeholder='john@example.com' />
             </FormField>
 
-            <FormField
-              form={form}
-              name='secondaryEmail'
-              label='Secondary Email (Optional)'
-              showMessage>
+            <FormField form={form} name='secondaryEmail' label='Secondary Email (Optional)' showMessage>
               <Input type='email' placeholder='secondary@example.com' />
             </FormField>
 
@@ -77,8 +76,8 @@ function CreateAccount() {
               <Input type='tel' placeholder='+1 (555) 000-0000' />
             </FormField>
 
-            <Button type='submit' className='w-full'>
-              Create Account
+            <Button type='submit' className='w-full' disabled={isCreatingAccount}>
+              {isCreatingAccount ? 'Creating account...' : 'Create Account'}
             </Button>
           </FormBase>
         </Card>

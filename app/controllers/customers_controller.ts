@@ -23,14 +23,7 @@ export default class CustomersController {
   }
 
   async getAll({ auth, request }: HttpContext) {
-    const {
-      page = 1,
-      perPage = 10,
-      startDate,
-      endDate,
-      sortBy = 'created_at',
-      sortOrder = 'desc',
-    } = await validateQueryParams(request.qs())
+    const { page = 1, perPage = 10, startDate, endDate, sortBy = 'created_at', sortOrder = 'desc' } = await validateQueryParams(request.qs())
     const customers = await Customer.query()
       .where('user_id', auth.user!.id)
       .betweenCreatedDates(startDate, endDate)

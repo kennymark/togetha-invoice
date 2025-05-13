@@ -9,7 +9,7 @@ import { useTableState } from '~/hooks/use-table-state'
 import StatsGrider from '~/components/stats-grider'
 import usePageProps from '~/hooks/use-page-props'
 
-const EarningsSheet = lazy(() => import('~/pages/dashboard/root/_components/earnings-sheet'))
+const EarningsSheet = lazy(() => import('~/pages/dashboard/home/_components/earnings-sheet'))
 
 export default function DashboardPage() {
   const { user } = usePageProps()

@@ -24,9 +24,29 @@ router.get('/about', ({ inertia }) => inertia.render('landing/about/index'))
 router.get('/auth/login', ({ inertia }) => inertia.render('auth/login/index'))
 router.get('/auth/create-account', ({ inertia }) => inertia.render('auth/create-account/index'))
 
-router.post('api/v1/users', [UsersController, 'create'])
-router.post('api/v1/users/login', [UsersController, 'apiLogin'])
+// Dashboard pages
+router
+  .group(() => {
+    router.get('/', ({ inertia }) => inertia.render('dashboard/home/index'))
+    router.get('/customers', ({ inertia }) => inertia.render('dashboard/customers/index'))
+    router.get('/customers/create', ({ inertia }) => inertia.render('dashboard/customers/create/index'))
+    router.get('/jobs', ({ inertia }) => inertia.render('dashboard/jobs/index'))
+    router.get('/jobs/create', ({ inertia }) => inertia.render('dashboard/jobs/create/index'))
+    router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
+    router.get('/invoices/create', ({ inertia }) => inertia.render('dashboard/invoices/create/index'))
+    router.get('/payments', ({ inertia }) => inertia.render('dashboard/payments/index'))
+    router.get('/payments/create', ({ inertia }) => inertia.render('dashboard/payments/create/index'))
+    router.get('/finance', ({ inertia }) => inertia.render('dashboard/finance/index'))
+    router.get('/settings', ({ inertia }) => inertia.render('dashboard/settings/index'))
+  })
+  .prefix('/dashboard')
+  .middleware(middleware.auth())
 
+// Unprotected API routes
+router.post('/api/v1/users', [UsersController, 'create'])
+router.post('/api/v1/users/login', [UsersController, 'apiLogin'])
+
+// Protected API routes
 router
   .group(() => {
     router
@@ -75,11 +95,8 @@ router
       })
       .prefix('invoices')
     router.get('/health', [HealthChecksController])
-    router.get('/', () => {
-      return { message: 'Hello world' }
-    })
   })
-  .prefix('api/v1')
+  .prefix('/api/v1')
   .middleware(middleware.auth())
 
 router.get('/swagger', async () => {

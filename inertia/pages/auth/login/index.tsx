@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { FormBase, FormField } from '~/components/reusable/base-form'
 import { getRoutePath } from '~/config/get-route-path'
 import { router } from '@inertiajs/react'
+import useInertiaMutation from '~/hooks/use-inertia-mutation'
 
 const formSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -23,30 +24,29 @@ function Login() {
     },
   })
 
-  // const { mutate: login, isPending: isLoggingIn } = useMutation({
-  //   mutationFn: (values: FormValues) => authService.login(values),
-  //   onSuccess: (data) => {
-  //     setUser(data.user)
-  //     setToken(data.token.token)
-  //     toast.success('Logged in successfully')
-  //     navigate(getRoutePath('dashboard'))
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.message)
-  //   },
-  // })
+  const { mutate: login, isPending: isLoggingIn } = useInertiaMutation({
+    url: 'api/v1/users/login',
+    method: 'post',
+    withInertia: false,
+    onSuccess: (data) => {
+      console.log(data)
+      toast.success('Logged in successfully')
+      router.visit(getRoutePath('dashboard'))
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
   const onSubmit = async (values: FormValues) => {
     console.log(values)
-    // login(values)
+    login(values)
   }
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 w-full'>
       <div className='sm:mx-auto sm:w-full sm:max-w-md'>
-        <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-          Sign in to your account
-        </h2>
+        <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Sign in to your account</h2>
         <p className='mt-2 text-center text-sm text-gray-600'>
           Or{' '}
           <Button
@@ -70,8 +70,8 @@ function Login() {
               <Input type='password' placeholder='••••••••' />
             </FormField>
 
-            <Button type='submit' className='w-full'>
-              Sign in
+            <Button type='submit' className='w-full' disabled={isLoggingIn}>
+              {isLoggingIn ? 'Logging in...' : 'Sign in'}
             </Button>
           </FormBase>
         </Card>
