@@ -1,5 +1,6 @@
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { type Attachment, attachment } from '@jrmc/adonis-attachment'
 import type { DateTime } from 'luxon'
 import Customer from './customer.js'
 import User from './user.js'
@@ -25,6 +26,9 @@ export default class Job extends BaseModel {
   @column() declare priority: JobPriority
 
   @column() declare dueDate: Date
+
+  @attachment({ preComputeUrl: false, folder: 'job_images' })
+  declare images: Attachment[]
 
   @belongsTo(() => Customer) declare customer: BelongsTo<typeof Customer>
 
