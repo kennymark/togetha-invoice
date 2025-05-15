@@ -1,7 +1,9 @@
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
+import Customer from './customer.js'
 import Service from './service.js'
+import User from './user.js'
 
 export type InvoiceStatus = 'pending' | 'paid' | 'overdue'
 export default class Invoice extends BaseModel {
@@ -27,6 +29,10 @@ export default class Invoice extends BaseModel {
   @column() declare isDiscountedPercentage: number
 
   @column() declare notes: string
+
+  @belongsTo(() => Customer) declare customer: BelongsTo<typeof Customer>
+
+  @belongsTo(() => User) declare user: BelongsTo<typeof User>
 
   @hasMany(() => Service) declare properties: HasMany<typeof Service>
 
