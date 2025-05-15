@@ -1,7 +1,7 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.6.2/schema.json",
   "organizeImports": {
-    "enabled": false
+    "enabled": true
   },
   "linter": {
     "enabled": true,
@@ -22,16 +22,14 @@
       "complexity": {
         "useLiteralKeys": "off",
         "noUselessFragments": "off",
-        "noStaticOnlyClass": "off",
-        "noBannedTypes": "off",
-        "noForEach": "off"
+        "noStaticOnlyClass": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off",
         "noChildrenProp": "off",
         "noConstAssign": "error",
         "noUnreachable": "error",
-        "useHookAtTopLevel": "warn",
+        "useHookAtTopLevel": "error",
         "noVoidTypeReturn": "warn"
       },
       "style": {
@@ -39,8 +37,7 @@
         "useDefaultParameterLast": "off",
         "noNonNullAssertion": "off",
         "noVar": "error",
-        "useConst": "error",
-        "useExponentiationOperator": "off"
+        "useConst": "error"
       }
     }
   },
@@ -49,7 +46,7 @@
     "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 150,
+    "lineWidth": 100,
     "lineEnding": "lf",
     "ignore": []
   },
