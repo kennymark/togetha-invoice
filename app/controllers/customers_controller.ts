@@ -60,18 +60,34 @@ export default class CustomersController {
     })
   }
 
-  async getCustomer({ params }: HttpContext) {
-    const customer = await Customer.findOrFail(params.id)
-    return customer
-  }
-
-  async update({ request, params, bouncer }: HttpContext) {
-    const body = await request.validateUsing(updateCustomerValidator)
+  async getCustomer({ params, bouncer, inertia }: HttpContext) {
     const customer = await Customer.findOrFail(params.id)
     await bouncer.authorize('ownsEntity', customer)
-    customer.merge(body)
-    await customer.save()
-    return { message: 'Customer updated successfully' }
+    return inertia.render('dashboard/customers/edit/index', { customer })
+  }
+
+  async update({ request, params, bouncer, response, session, logger }: HttpContext) {
+    try {
+      const body = await request.validateUsing(updateCustomerValidator)
+      const customer = await Customer.findOrFail(params.id)
+      await bouncer.authorize('ownsEntity', customer)
+
+      customer.merge(body)
+      await customer.save()
+
+      session.flash('success', { message: 'Customer updated successfully' })
+      return response.redirect().toPath('/dashboard/customers')
+    } catch (e) {
+      logger.error(e)
+
+      if (e.messages) {
+        session.flash('errors', e.messages)
+        return response.redirect().back()
+      }
+
+      session.flash('error', { message: 'Failed to update customer' })
+      return response.redirect().back()
+    }
   }
 
   async delete({ params, bouncer }: HttpContext) {

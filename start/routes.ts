@@ -37,12 +37,16 @@ router.get('/reset-password', ({ inertia }) => inertia.render('auth/reset-passwo
 router
   .group(() => {
     router.get('/', ({ inertia }) => inertia.render('dashboard/home/index'))
+
     router.get('/customers', [CustomersController, 'getAll'])
     router.get('/customers/create', ({ inertia }) =>
       inertia.render('dashboard/customers/create/index'),
     )
+    router.get('/customers/edit/:id', [CustomersController, 'getCustomer'])
+
     router.get('/jobs', ({ inertia }) => inertia.render('dashboard/jobs/index'))
     router.get('/jobs/create', ({ inertia }) => inertia.render('dashboard/jobs/create/index'))
+
     router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
     router.get('/invoices/create', ({ inertia }) =>
       inertia.render('dashboard/invoices/create/index'),

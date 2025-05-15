@@ -8,8 +8,8 @@ import { Button } from '~/components/ui'
 import { customerFormSchema, type CustomerFormValues } from '~/lib/schemas/customer'
 import { router } from '@inertiajs/react'
 import FlashMessages from '~/components/flash-messages'
-import { FakeDataGenerator } from '~/components/dev/fake-data-generator'
 import { PhoneInput } from '~/components/ui/phone-input'
+import type { SingleCustomer } from '~/models/customer.model'
 
 const countryOptions = [
   { value: 'uk', label: 'United Kingdom' },
@@ -18,42 +18,42 @@ const countryOptions = [
   // Add more as needed
 ]
 
-export default function CustomersCreatePage() {
+interface Props {
+  customer: SingleCustomer
+}
+
+export default function CustomersEditPage({ customer }: Props) {
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: {
-      fullName: '',
-      email: '',
-      phone: '',
-      businessName: '',
-      address: '',
-      state: '',
-      postCode: '',
-      city: '',
-      country: '',
+      fullName: customer.fullName,
+      email: customer.email,
+      phone: customer.phone,
+      businessName: customer.businessName || '',
+      address: customer.address || '',
+      state: customer.state || '',
+      postCode: customer.postCode || '',
+      city: customer.city || '',
+      country: customer.country || '',
+      businessAddress: customer.businessAddress || '',
     },
   })
 
   function handleSubmit(data: CustomerFormValues) {
-    router.post('/customers', data)
+    router.put(`/customers/${customer.id}`, data)
   }
 
   return (
     <>
       <FlashMessages />
-      <SEO
-        title='Add Customer'
-        description='Add new customers and start managing their jobs and payments'
-      />
+      <SEO title='Edit Customer' description='Update customer information and details' />
       <PageHeader
-        title='Add Customer'
-        description='Add new customers and start managing their jobs and payments'
+        title='Edit Customer'
+        description='Update customer information and details'
         hasBackButton
         backLink='/dashboard/customers'
       />
       <div className='flex flex-col gap-8 w-full'>
-        <FakeDataGenerator type='customer' onGenerate={form.reset} className='px-4' />
-
         <FormBase form={form} onSubmit={handleSubmit} className='space-y-7'>
           <FormBaseHeader title='Basic information' />
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -99,7 +99,7 @@ export default function CustomersCreatePage() {
           </div>
 
           <Button type='submit' className='px-8 self-start'>
-            Add customer
+            Update customer
           </Button>
         </FormBase>
       </div>
