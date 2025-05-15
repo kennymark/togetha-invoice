@@ -1,0 +1,4 @@
+// convert bytes to mb
+export function convertBytesToMb(bytes: number) {
+  return (bytes / 1024 / 1024).toFixed(2)
+}
