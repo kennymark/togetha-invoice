@@ -12,6 +12,8 @@ export default class extends BaseSchema {
       table.string('password').notNullable()
       table.boolean('is_2fa_enabled').defaultTo(false)
       table.string('contact_number').nullable()
+      table.string('reset_token').nullable()
+      table.timestamp('reset_token_expires_at').nullable()
       table.jsonb('metadata')
       table
         .enum('status', ['pending', 'active', 'suspended', 'deleted'])

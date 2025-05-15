@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.text('description').notNullable()
       table.float('amount').notNullable()
       table.string('currency_code').notNullable()
+      table.string('customer_id').references('id').inTable('customers')
       table
         .enum('status', [
           [
