@@ -51,6 +51,7 @@ export default defineConfig({
     () => import('@tuyau/core/tuyau_provider'),
     () => import('@tuyau/openapi/openapi_provider'),
     () => import('#providers/postgis_provider'),
+    () => import('@adonisjs/drive/drive_provider')
   ],
 
   /*
@@ -65,6 +66,7 @@ export default defineConfig({
     () => import('#start/routes'),
     () => import('#start/kernel'),
     () => import('#start/validator'),
+    () => import('#start/events'),
   ],
 
   /*
