@@ -48,5 +48,22 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring the mail package
   |----------------------------------------------------------
   */
-  RESEND_API_KEY: Env.schema.string()
+  RESEND_API_KEY: Env.schema.string(),
+  NO_REPLY_EMAIL: Env.schema.string(),
+  SMTP_HOST: Env.schema.string(),
+  SMTP_PORT: Env.schema.number(),
+  SMTP_USERNAME: Env.schema.string(),
+  SMTP_PASSWORD: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the drive package
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum(['r2', 'fs'] as const),
+  R2_ACCESS_KEY_ID: Env.schema.string(),
+  R2_SECRET_ACCESS_KEY: Env.schema.string(),
+  R2_REGION: Env.schema.string(),
+  R2_BUCKET: Env.schema.string(),
+  R2_PUBLIC_ACCESS_URL: Env.schema.string(),
 })
