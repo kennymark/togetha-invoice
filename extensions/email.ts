@@ -3,12 +3,17 @@ declare module '@adonisjs/core/types' {
     'forgot-password': {
       subject: string
       email: string
-      html: string
+      resetUrl: string
+      user: {
+        fullName: string
+      }
     }
     'reset-password': {
       subject: string
       email: string
-      html: string
+      user: {
+        fullName: string
+      }
     }
     'simple-send': {
       subject: string
@@ -18,6 +23,14 @@ declare module '@adonisjs/core/types' {
       replyTo?: string
       name?: string
       html: string
+    }
+    'signup-success': {
+      subject: string
+      email: string
+      link: string
+      user: {
+        fullName: string
+      }
     }
   }
 }
