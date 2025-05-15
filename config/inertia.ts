@@ -11,7 +11,6 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    // user: (ctx) => ctx.inertia.always(() => ctx.auth.user),
     session: (ctx) => ctx.session,
     qs: (ctx) => ctx.request.qs(),
     user: (ctx) => ({

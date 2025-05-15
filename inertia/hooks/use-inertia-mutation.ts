@@ -20,7 +20,7 @@ function useInertiaMutation({ url, method, onSuccess, onError, withInertia = tru
       method,
       data: requestData,
       headers: {
-        'X-Inertia': withInertia ? 'true' : 'false',
+        'X-Inertia': 'false',
       },
       onSuccess: (response) => {
         setData(response as any)

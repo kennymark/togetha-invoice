@@ -20,7 +20,10 @@ createInertiaApp({
   title: (title) => `${title} - ${appName}`,
 
   resolve: async (name) => {
-    const page = (await resolvePageComponent(`../pages/${name}.tsx`, import.meta.glob('../pages/**/*.tsx'))) as PageComponent
+    const page = (await resolvePageComponent(
+      `../pages/${name}.tsx`,
+      import.meta.glob('../pages/**/*.tsx'),
+    )) as PageComponent
 
     if (name.includes('dashboard')) {
       page.default.layout ??= (p) => <DashboardLayout children={p} />
@@ -36,7 +39,12 @@ createInertiaApp({
       el,
       <>
         <App {...props} />
-        <Toaster position='top-right' className='h-10' style={{ fontFamily: 'system-ui' }} toastOptions={{ className: 'p-4' }} />
+        <Toaster
+          position='top-right'
+          className='h-10'
+          style={{ fontFamily: 'system-ui' }}
+          toastOptions={{ className: 'p-4' }}
+        />
       </>,
     )
   },

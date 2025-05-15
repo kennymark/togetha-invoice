@@ -53,8 +53,8 @@ router
   .middleware(middleware.auth())
 
 // Unprotected API routes
-router.post('/api/v1/users', [UsersController, 'create'])
-router.post('/api/v1/users/login', [UsersController, 'apiLogin'])
+router.post('/signup', [UsersController, 'create'])
+router.post('/login', [UsersController, 'login'])
 
 // Protected API routes
 router
