@@ -17,25 +17,35 @@ const JobsController = () => import('#controllers/jobs_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
 const InvoicesController = () => import('#controllers/invoices_controller')
 const UsersController = () => import('#controllers/users_controller')
-
+const ReportsController = () => import('#controllers/reports_controller')
 // Marketing pages
 router.get('/', ({ inertia }) => inertia.render('landing/home/index'))
 router.get('/about', ({ inertia }) => inertia.render('landing/about/index'))
 router.get('/auth/login', ({ inertia }) => inertia.render('auth/login/index'))
 router.get('/auth/create-account', ({ inertia }) => inertia.render('auth/create-account/index'))
 
+router.get('/forgot-password', ({ inertia }) => inertia.render('auth/forgot-password'))
+router.post('/forgot-password', [UsersController, 'forgotPassword'])
+router.get('/reset-password', ({ inertia }) => inertia.render('auth/reset-password'))
+
 // Dashboard pages
 router
   .group(() => {
     router.get('/', ({ inertia }) => inertia.render('dashboard/home/index'))
     router.get('/customers', ({ inertia }) => inertia.render('dashboard/customers/index'))
-    router.get('/customers/create', ({ inertia }) => inertia.render('dashboard/customers/create/index'))
+    router.get('/customers/create', ({ inertia }) =>
+      inertia.render('dashboard/customers/create/index'),
+    )
     router.get('/jobs', ({ inertia }) => inertia.render('dashboard/jobs/index'))
     router.get('/jobs/create', ({ inertia }) => inertia.render('dashboard/jobs/create/index'))
     router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
-    router.get('/invoices/create', ({ inertia }) => inertia.render('dashboard/invoices/create/index'))
+    router.get('/invoices/create', ({ inertia }) =>
+      inertia.render('dashboard/invoices/create/index'),
+    )
     router.get('/payments', ({ inertia }) => inertia.render('dashboard/payments/index'))
-    router.get('/payments/create', ({ inertia }) => inertia.render('dashboard/payments/create/index'))
+    router.get('/payments/create', ({ inertia }) =>
+      inertia.render('dashboard/payments/create/index'),
+    )
     router.get('/finance', ({ inertia }) => inertia.render('dashboard/finance/index'))
     router.get('/settings', ({ inertia }) => inertia.render('dashboard/settings/index'))
   })
@@ -94,6 +104,16 @@ router
         router.delete('/:id', [InvoicesController, 'delete'])
       })
       .prefix('invoices')
+
+    router
+      .group(() => {
+        router.get('/customers', [ReportsController, 'cutsomersExport'])
+        router.get('/jobs', [ReportsController, 'jobsExport'])
+        router.get('/invoices', [ReportsController, 'invoicesExport'])
+        router.get('/payments', [ReportsController, 'paymentsExport'])
+      })
+      .prefix('reports')
+
     router.get('/health', [HealthChecksController])
   })
   .prefix('/api/v1')
