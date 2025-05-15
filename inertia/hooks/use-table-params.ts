@@ -33,24 +33,26 @@ function useDebounce(callback: (value: string) => void, delay: number) {
 export function useTableParams(prevSearchParams: TableParams) {
   const urlParams = useQueryParams()
   const isUpdatingRef = useRef(false)
+  const hasInitializedRef = useRef(false)
 
   // Initialize params with default values if they don't exist
-  const initializeParams = useCallback(() => {
+  useEffect(() => {
+    if (hasInitializedRef.current) return
+
     const hasParams = Object.keys(urlParams).length > 0
-    if (!hasParams) {
-      router.visit(window.location.pathname, {
-        data: prevSearchParams,
-        preserveScroll: true,
-        preserveState: true,
-        replace: true,
-      })
+    const hasDefaultParams = Object.keys(prevSearchParams).length > 0
+
+    if (!hasParams && hasDefaultParams) {
+      hasInitializedRef.current = true
+      const url = new URL(window.location.href)
+      for (const [key, value] of Object.entries(prevSearchParams)) {
+        if (value !== undefined && value !== '') {
+          url.searchParams.set(key, String(value))
+        }
+      }
+      window.history.replaceState({}, '', url.toString())
     }
   }, [urlParams, prevSearchParams])
-
-  // Initialize params on mount
-  useEffect(() => {
-    initializeParams()
-  }, [initializeParams])
 
   // Only parse the URL params once and memoize them
   const parsedQuery = useMemo(() => {
@@ -71,24 +73,44 @@ export function useTableParams(prevSearchParams: TableParams) {
       if (isUpdatingRef.current) return
 
       isUpdatingRef.current = true
-      const newParams = { ...urlParams, ...params }
+      try {
+        const newParams = { ...urlParams, ...params }
 
-      // Remove undefined or empty values
-      Object.keys(newParams).forEach((key) => {
-        if (newParams[key] === undefined || newParams[key] === '') {
-          delete newParams[key]
+        // Remove undefined or empty values
+        for (const key of Object.keys(newParams)) {
+          if (newParams[key] === undefined || newParams[key] === '') {
+            delete newParams[key]
+          }
         }
-      })
 
-      router.visit(window.location.pathname, {
-        data: newParams,
-        preserveScroll: true,
-        preserveState: true,
-        replace: true,
-        onFinish: () => {
+        // Only update if params actually changed
+        const currentParams = new URLSearchParams(window.location.search)
+        const paramsChanged = Object.entries(newParams).some(([key, value]) => {
+          return currentParams.get(key) !== String(value)
+        })
+
+        if (paramsChanged) {
+          router.visit(window.location.pathname, {
+            data: newParams,
+            preserveScroll: true,
+            preserveState: true,
+            replace: true,
+            onFinish: () => {
+              isUpdatingRef.current = false
+            },
+            onError: () => {
+              isUpdatingRef.current = false
+            },
+            onCancel: () => {
+              isUpdatingRef.current = false
+            },
+          })
+        } else {
           isUpdatingRef.current = false
-        },
-      })
+        }
+      } catch (error) {
+        isUpdatingRef.current = false
+      }
     },
     [urlParams],
   )

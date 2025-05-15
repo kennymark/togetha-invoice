@@ -23,7 +23,7 @@ export default {
         ],
       },
       colors: {
-        border: 'hsl(var(--border))',
+        border: '#E7E8E9',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: 'hsl(var(--card))',
@@ -31,7 +31,7 @@ export default {
         popover: 'hsl(var(--popover))',
         'popover-foreground': 'hsl(var(--popover-foreground))',
         primary: {
-          DEFAULT: '#5A45FF',
+          DEFAULT: 'hsl(var(--primary))',
         },
         'primary-foreground': 'hsl(var(--primary-foreground))',
         main: 'hsl(var(--main))',

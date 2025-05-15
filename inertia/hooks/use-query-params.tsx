@@ -7,9 +7,10 @@ function useQueryParams<T = Record<string, string>>(): SharedProps['qs'] & T {
   return page.props.qs as SharedProps['qs'] & T
 }
 
-export function updateQueryParams(params: Record<string, string>) {
+export function updateQueryParams(params: Record<string, any>) {
   const currentUrl = window.location.pathname
-  router.get(currentUrl, params)
+  const currentParams = Object.fromEntries(new URLSearchParams(window.location.search))
+  router.get(currentUrl, { ...currentParams, ...params })
 }
 
 export default useQueryParams

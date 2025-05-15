@@ -46,6 +46,7 @@ export function BaseTable<T extends { id: string | number }>({
   onSearch,
 }: BaseTableProps<T>) {
   const sortedData = useMemo(() => {
+    if (!Array.isArray(data)) return []
     const items = [...data]
     if (!sortConfig.key) return items
     return items.sort((a, b) => {

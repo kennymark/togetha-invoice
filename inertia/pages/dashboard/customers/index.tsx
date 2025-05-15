@@ -7,7 +7,7 @@ import StatsGrider from '~/components/stats-grider'
 import { Users } from 'lucide-react'
 import { getRoutePath } from '~/config/get-route-path'
 import { EditButton } from '~/components/edit-button'
-import type { SingleCustomer } from '~/models/customer.model'
+import type { Customers, SingleCustomer } from '~/models/customer.model'
 import { router } from '@inertiajs/react'
 import { useTableState } from '~/hooks/use-table-state'
 
@@ -15,7 +15,7 @@ export default function CustomersPage({
   customers,
   stats,
 }: {
-  customers: SingleCustomer[]
+  customers: Customers
   stats: number
 }) {
   const {
@@ -27,9 +27,6 @@ export default function CustomersPage({
     handlePageSizeChange,
     handleSearch,
   } = useTableState()
-
-  console.log('stats', stats)
-  console.log('customers', customers)
 
   const columns = [
     {
@@ -76,7 +73,7 @@ export default function CustomersPage({
         </StatsGrider>
 
         <BaseTable<SingleCustomer>
-          data={customers || []}
+          data={customers.data || []}
           columns={columns}
           emptyMessage='No customers found.'
           searchPlaceholder='Search customers...'

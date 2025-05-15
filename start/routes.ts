@@ -18,6 +18,12 @@ const PaymentsController = () => import('#controllers/payments_controller')
 const InvoicesController = () => import('#controllers/invoices_controller')
 const UsersController = () => import('#controllers/users_controller')
 const ReportsController = () => import('#controllers/reports_controller')
+
+// Handle Chrome DevTools request
+router.get('/.well-known/appspecific/com.chrome.devtools.json', ({ response }) => {
+  return response.json({})
+})
+
 // Marketing pages
 router.get('/', ({ inertia }) => inertia.render('landing/home/index'))
 router.get('/about', ({ inertia }) => inertia.render('landing/about/index'))
@@ -25,14 +31,13 @@ router.get('/auth/login', ({ inertia }) => inertia.render('auth/login/index'))
 router.get('/auth/create-account', ({ inertia }) => inertia.render('auth/create-account/index'))
 
 router.get('/forgot-password', ({ inertia }) => inertia.render('auth/forgot-password'))
-router.post('/forgot-password', [UsersController, 'forgotPassword'])
 router.get('/reset-password', ({ inertia }) => inertia.render('auth/reset-password'))
 
 // Dashboard pages
 router
   .group(() => {
     router.get('/', ({ inertia }) => inertia.render('dashboard/home/index'))
-    router.get('/customers', ({ inertia }) => inertia.render('dashboard/customers/index'))
+    router.get('/customers', [CustomersController, 'getAll'])
     router.get('/customers/create', ({ inertia }) =>
       inertia.render('dashboard/customers/create/index'),
     )
@@ -55,27 +60,27 @@ router
 // Unprotected API routes
 router.post('/signup', [UsersController, 'create'])
 router.post('/login', [UsersController, 'login'])
+router.post('/forgot-password', [UsersController, 'forgotPassword'])
+router.post('/reset-password', [UsersController, 'resetPassword'])
+router.post('/logout', [UsersController, 'logout'])
 
 // Protected API routes
 router
   .group(() => {
     router
       .group(() => {
-        router.get('/me', [UsersController, 'me'])
         router.put('/:id', [UsersController, 'update'])
         router.delete('/:id', [UsersController, 'delete'])
       })
-      .prefix('users')
+      .prefix('/users')
     router
       .group(() => {
-        router.get('/all', [CustomersController, 'getAll'])
-        router.get('/stats', [CustomersController, 'stats'])
         router.post('/', [CustomersController, 'createCustomer'])
         router.get('/:id', [CustomersController, 'getCustomer'])
         router.put('/:id', [CustomersController, 'update'])
         router.delete('/:id', [CustomersController, 'delete'])
       })
-      .prefix('customers')
+      .prefix('/customers')
 
     router
       .group(() => {
@@ -85,7 +90,7 @@ router
         router.put('/:id', [JobsController, 'update'])
         router.delete('/:id', [JobsController, 'delete'])
       })
-      .prefix('jobs')
+      .prefix('/jobs')
 
     router
       .group(() => {
@@ -94,7 +99,7 @@ router
         router.put('/:id', [PaymentsController, 'updatePayment'])
         router.delete('/:id', [PaymentsController, 'delete'])
       })
-      .prefix('payments')
+      .prefix('/payments')
 
     router
       .group(() => {
@@ -103,7 +108,7 @@ router
         router.put('/:id', [InvoicesController, 'update'])
         router.delete('/:id', [InvoicesController, 'delete'])
       })
-      .prefix('invoices')
+      .prefix('/invoices')
 
     router
       .group(() => {
@@ -112,11 +117,10 @@ router
         router.get('/invoices', [ReportsController, 'invoicesExport'])
         router.get('/payments', [ReportsController, 'paymentsExport'])
       })
-      .prefix('reports')
+      .prefix('/reports')
 
     router.get('/health', [HealthChecksController])
   })
-  .prefix('/api/v1')
   .middleware(middleware.auth())
 
 router.get('/swagger', async () => {

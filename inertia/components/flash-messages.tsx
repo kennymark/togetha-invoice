@@ -16,13 +16,11 @@ function FlashMessages() {
 
     // Handle success message
     if (flash.success?.message) {
-      console.log('success message', flash.success.message)
       toast.success(flash.success.message)
     }
 
     // Handle single error message
     if (flash.error?.message) {
-      console.log('error message', flash.error.message)
       toast.error(flash.error.message)
     }
 

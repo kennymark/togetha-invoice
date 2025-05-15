@@ -65,11 +65,14 @@ ModelQueryBuilder.macro('whereTrue', function (this: ModelQueryBuilder, column: 
 
 ModelQueryBuilder.macro(
   'betweenCreatedDates',
-  function (this: ModelQueryBuilder, startDate: string, endDate: string) {
-    const parsedS = startDate !== 'null' && startDate !== ''
-    const parsedE = endDate !== 'null' && endDate !== ''
+  function (this: ModelQueryBuilder, startDate?: string, endDate?: string) {
+    const isValidDate = (date?: string) => date && date !== 'null' && date !== ''
 
-    return this.if(parsedS && parsedE, (q) => q.whereBetween('created_at', [startDate, endDate]))
+    if (!isValidDate(startDate) || !isValidDate(endDate)) {
+      return this
+    }
+
+    return this.whereBetween('created_at', [new Date(startDate!), new Date(endDate!)])
   },
 )
 

@@ -22,19 +22,30 @@ export default class CustomersController {
     }
   }
 
-  async getAll({ auth, request }: HttpContext) {
-    const { page = 1, perPage = 10, startDate, endDate, sortBy = 'created_at', sortOrder = 'desc' } = await validateQueryParams(request.qs())
+  async getAll({ auth, request, inertia }: HttpContext) {
+    const {
+      page = 1,
+      perPage = 10,
+      startDate,
+      endDate,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+    } = await validateQueryParams(request.qs())
+
     const customers = await Customer.query()
       .where('user_id', auth.user!.id)
-      .betweenCreatedDates(startDate, endDate)
+      // .betweenCreatedDates(startDate, endDate)
       .sortBy(sortBy, sortOrder)
       .paginate(page, perPage)
-    return customers
-  }
 
-  async stats() {
     const totalCustomers = await Customer.query().getCount()
-    return { totalCustomers: totalCustomers.total }
+
+    console.log(customers)
+
+    return inertia.render('dashboard/customers/index', {
+      customers: customers,
+      stats: totalCustomers.total,
+    })
   }
 
   async getCustomer({ params }: HttpContext) {

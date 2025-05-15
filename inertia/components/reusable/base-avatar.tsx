@@ -59,11 +59,7 @@ function BaseAvatar({ src, alt, fallback, size = 'md', className, name }: Custom
 
   return (
     <Avatar className={cn(sizeClasses[size], 'object-cover', className)}>
-      <AvatarImage
-        src={src || '/assets/images/default-user.svg'}
-        alt={alt}
-        className='object-cover'
-      />
+      <AvatarImage src={src as string} alt={alt} className='object-cover' />
       <AvatarFallback className='font-medium'>{getFallbackText()}</AvatarFallback>
     </Avatar>
   )

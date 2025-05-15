@@ -103,8 +103,7 @@ export function TableHeaderSection({
               variant='ghost'
               className='rounded-full'
               onClick={() => {
-                setSearchValue('')
-                if (onSearch) onSearch('')
+                updateQueryParams(defaultTableState)
               }}>
               Reset
             </Button>

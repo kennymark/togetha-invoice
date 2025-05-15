@@ -63,7 +63,6 @@ const SidebarBody = React.memo(
   }) => {
     const { open, toggleSidebar } = useSidebar()
     const location = usePage().url.split(/[?#]/)[0]
-    console.log('page location url', location)
 
     // Memoize the isRouteActive function
     const isRouteActive = React.useCallback(
@@ -95,7 +94,7 @@ const SidebarBody = React.memo(
                   }
                 }}
                 className={cn(
-                  'flex items-center gap-2 rounded-[12px] transition-all duration-300 ease-in-out ',
+                  'flex items-center gap-1 rounded-[12px] transition-all duration-300 ease-in-out ',
                   isActive
                     ? 'bg-muted text-white hover:text-white'
                     : 'text-[#FFFFFF80] hover:text-white',

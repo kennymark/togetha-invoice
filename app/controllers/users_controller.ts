@@ -78,10 +78,6 @@ export default class UsersController {
     }
   }
 
-  async me({ auth, response }: HttpContext) {
-    return response.redirect().toPath('/dashboard')
-  }
-
   async delete({ response, params, session }: HttpContext) {
     try {
       const id = params.id
@@ -187,6 +183,6 @@ export default class UsersController {
   async logout({ auth, response, session }: HttpContext) {
     await auth.use('web').logout()
     session.flash('success', { message: 'Successfully logged out!' })
-    return response.redirect().toPath('/')
+    return response.redirect().toPath('/auth/login')
   }
 }
