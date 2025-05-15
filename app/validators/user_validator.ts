@@ -29,3 +29,17 @@ export const loginValidator = vine.compile(
     referrer: vine.string().optional(),
   }),
 )
+
+export const resetPasswordValidator = vine.compile(
+  vine.object({
+    email: vine.string().email(),
+    token: vine.string().minLength(10),
+    password: vine.string().minLength(8),
+  }),
+)
+
+export const resetPasswordRequestValidator = vine.compile(
+  vine.object({
+    email: vine.string().email(),
+  }),
+)
