@@ -6,6 +6,10 @@ import { SEO } from '~/components/seo'
 import { PageHeader } from '../../_components/page-header'
 import { Button } from '~/components/ui'
 import { customerFormSchema, type CustomerFormValues } from '~/lib/schemas/customer'
+import { router } from '@inertiajs/react'
+import FlashMessages from '~/components/flash-messages'
+import { FakeDataGenerator } from '~/components/dev/fake-data-generator'
+import { PhoneInput } from '~/components/ui/phone-input'
 
 const countryOptions = [
   { value: 'uk', label: 'United Kingdom' },
@@ -30,25 +34,13 @@ export default function CustomersCreatePage() {
     },
   })
 
-  // const { mutate: createCustomer, isPending } = useMutation({
-  //   mutationFn: customersService.createCustomer,
-  //   onSuccess: () => {
-  //     toast.success('Customer created successfully')
-  //     form.reset()
-  //     navigate(getRoutePath('dashboard_customers'))
-  //   },
-  //   onError: () => {
-  //     toast.error('Failed to create customer')
-  //   },
-  // })
-
   function handleSubmit(data: CustomerFormValues) {
-    console.log(data)
-    // createCustomer(data)
+    router.post('/customers', data)
   }
 
   return (
     <>
+      <FlashMessages />
       <SEO
         title='Add Customer'
         description='Add new customers and start managing their jobs and payments'
@@ -58,6 +50,8 @@ export default function CustomersCreatePage() {
         description='Add new customers and start managing their jobs and payments'
       />
       <div className='flex flex-col gap-8 w-full'>
+        <FakeDataGenerator type='customer' onGenerate={form.reset} className='px-4' />
+
         <FormBase form={form} onSubmit={handleSubmit} className='space-y-7'>
           <FormBaseHeader title='Basic information' />
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -68,7 +62,7 @@ export default function CustomersCreatePage() {
               <Input type='email' placeholder='ee@yahoo.com' />
             </FormField>
             <FormField form={form} name='phone' label='Phone number' showMessage>
-              <Input placeholder='+44 448 672 383 5' />
+              <PhoneInput placeholder='+44 448 672 383 5' />
             </FormField>
             <FormField form={form} name='address' label='Address line' showMessage>
               <Input placeholder='…' />

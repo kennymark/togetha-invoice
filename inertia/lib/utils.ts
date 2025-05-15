@@ -54,18 +54,29 @@ export function getTwoInitials(name: string) {
 export function parsePostgisPoint(postgisPoint: string): { lat: number; lng: number } | null {
   try {
     // Remove the SRID prefix if present (first 18 characters)
-    const hexString = postgisPoint.slice(18);
-    
+    const hexString = postgisPoint.slice(18)
+
     // Convert hex to buffer
-    const buffer = Buffer.from(hexString, 'hex');
-    
+    const buffer = Buffer.from(hexString, 'hex')
+
     // Read the coordinates (double precision, 8 bytes each)
-    const lng = buffer.readDoubleLE(0);
-    const lat = buffer.readDoubleLE(8);
-    
-    return { lat, lng };
+    const lng = buffer.readDoubleLE(0)
+    const lat = buffer.readDoubleLE(8)
+
+    return { lat, lng }
   } catch (error) {
-    console.error('Error parsing PostGIS point:', error);
-    return null;
+    console.error('Error parsing PostGIS point:', error)
+    return null
   }
 }
+
+/**
+ * Helper function to check if the application is running in development mode
+ */
+export const isDevelopment = () => process.env.NODE_ENV === 'development'
+
+/**
+ * Helper function to check if we should show development-only features
+ * This can be extended to include other conditions in the future
+ */
+export const showDevFeatures = () => isDevelopment()

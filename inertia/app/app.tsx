@@ -15,7 +15,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 type PageComponent = { default: { layout?: (p: React.ReactNode) => React.JSX.Element } }
 
 createInertiaApp({
-  progress: { color: '#5468FF', showSpinner: true },
+  progress: { color: '#00867F', showSpinner: true },
 
   title: (title) => `${title} - ${appName}`,
 

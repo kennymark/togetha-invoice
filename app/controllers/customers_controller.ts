@@ -5,20 +5,34 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class CustomersController {
-  async createCustomer({ auth, request, response, logger }: HttpContext) {
+  async createCustomer({ auth, request, response, logger, session }: HttpContext) {
     const trx = await db.transaction()
     try {
       const body = await request.validateUsing(createCustomerValidator)
       const findCustomer = await Customer.query().where({ email: body.email }).first()
-      if (findCustomer) return response.conflict({ error: 'Customer already exists' })
+
+      if (findCustomer) {
+        session.flash('error', { message: 'Customer already exists' })
+        return response.redirect().back()
+      }
+
       await Customer.create({ ...body, userId: auth.user?.id }, { client: trx })
       await trx.commit()
       logger.info(`Customer created: ${body.fullName}`)
-      return { message: 'Customer created successfully' }
+
+      session.flash('success', { message: 'Customer created successfully' })
+      return response.redirect().toPath('/dashboard/customers')
     } catch (e) {
       await trx.rollback()
       logger.error(e)
-      throw e
+
+      if (e.messages) {
+        session.flash('errors', e.messages)
+        return response.redirect().back()
+      }
+
+      session.flash('error', { message: 'Failed to create customer' })
+      return response.redirect().back()
     }
   }
 
@@ -34,13 +48,11 @@ export default class CustomersController {
 
     const customers = await Customer.query()
       .where('user_id', auth.user!.id)
-      // .betweenCreatedDates(startDate, endDate)
+      .betweenCreatedDates(startDate, endDate)
       .sortBy(sortBy, sortOrder)
       .paginate(page, perPage)
 
-    const totalCustomers = await Customer.query().getCount()
-
-    console.log(customers)
+    const totalCustomers = await Customer.query().where('user_id', auth.user!.id).getCount()
 
     return inertia.render('dashboard/customers/index', {
       customers: customers,

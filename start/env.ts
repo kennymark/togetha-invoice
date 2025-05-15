@@ -66,4 +66,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   R2_REGION: Env.schema.string(),
   R2_BUCKET: Env.schema.string(),
   R2_PUBLIC_ACCESS_URL: Env.schema.string(),
+
+  AUTO_POPULATE_FAKE_DATA: Env.schema.boolean.optional(),
+  AUTO_POPULATE_FAKE_DATA_COUNT: Env.schema.number.optional(),
 })
