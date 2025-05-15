@@ -83,33 +83,33 @@ EmailService.on('simple-send', async (message, data: Emails['simple-send']) => {
   message.html(html)
 })
 
-EmailService.on('signup-success', async (message, data: Emails['signup-success']) => {
-  const { subject, email, link, user } = data
+// EmailService.on('signup-success', async (message, data: Emails['signup-success']) => {
+//   const { subject, email, link, user } = data
 
-  if (!email) {
-    logger.error('No recipient email provided for signup success email')
-    throw new Error('No recipient email provided')
-  }
+//   if (!email) {
+//     logger.error('No recipient email provided for signup success email')
+//     throw new Error('No recipient email provided')
+//   }
 
-  try {
-    let html: string
+//   try {
+//     let html: string
 
-    // message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
+//     // message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
 
-    // Debug logging
-    logger.debug('Sending signup success email', {
-      to: email,
-      from: NO_REPLY_EMAIL,
-      subject,
-    })
-  } catch (error) {
-    logger.error('Failed to send signup success email', {
-      error,
-      email,
-      subject,
-    })
-    throw error
-  }
-})
+//     // Debug logging
+//     logger.debug('Sending signup success email', {
+//       to: email,
+//       from: NO_REPLY_EMAIL,
+//       subject,
+//     })
+//   } catch (error) {
+//     logger.error('Failed to send signup success email', {
+//       error,
+//       email,
+//       subject,
+//     })
+//     throw error
+//   }
+// })
 
 export default EmailService
