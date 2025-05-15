@@ -1,5 +1,7 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
+import Customer from './customer.js'
 
 export type PaymentStatus =
   | 'paid'
@@ -24,6 +26,8 @@ export default class Payment extends BaseModel {
   @column() declare paymentMethod: string
   @column() declare paymentUrl: string
   @column() declare paymentDate: Date
+
+  @belongsTo(() => Customer) declare customer: BelongsTo<typeof Customer>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
