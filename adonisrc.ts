@@ -17,6 +17,7 @@ export default defineConfig({
     () => import('@adonisjs/mail/commands'),
     () => import('@tuyau/core/commands'),
     () => import('@tuyau/openapi/commands'),
+    () => import('@jrmc/adonis-attachment/commands'),
   ],
 
   /*
@@ -51,7 +52,8 @@ export default defineConfig({
     () => import('@tuyau/core/tuyau_provider'),
     () => import('@tuyau/openapi/openapi_provider'),
     () => import('#providers/postgis_provider'),
-    () => import('@adonisjs/drive/drive_provider')
+    () => import('@adonisjs/drive/drive_provider'),
+    () => import('@jrmc/adonis-attachment/attachment_provider'),
   ],
 
   /*
