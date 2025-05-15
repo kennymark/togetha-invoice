@@ -40,6 +40,7 @@ export function TableHeaderSection({
   customFilters,
   sortOptions,
   onSearch,
+  resourceName,
 }: TableHeaderSectionProps & { onSearch?: (value: string) => void }) {
   const searchParams = useQueryParams()
   const [searchValue, setSearchValue] = useState('')
@@ -56,27 +57,38 @@ export function TableHeaderSection({
 
   const handleDateRangeSelect = (value: string) => {
     const now = new Date()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
     let startDate = new Date()
+    let endDate = tomorrow.toISOString().split('T')[0]
+
     switch (value) {
       case '1d':
         startDate.setDate(now.getDate() - 1)
+        endDate = now.toISOString().split('T')[0]
         break
       case '7d':
         startDate.setDate(now.getDate() - 7)
+        endDate = now.toISOString().split('T')[0]
         break
       case '30d':
         startDate.setDate(now.getDate() - 30)
+        endDate = now.toISOString().split('T')[0]
         break
       case '180d':
         startDate.setDate(now.getDate() - 180)
+        endDate = now.toISOString().split('T')[0]
         break
       default:
         startDate = new Date(0) // All time
     }
-    updateQueryParams({
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: now.toISOString().split('T')[0],
-    })
+    updateQueryParams(
+      {
+        startDate: startDate.toISOString().split('T')[0],
+        endDate,
+      },
+      resourceName,
+    )
   }
 
   return (
@@ -103,7 +115,7 @@ export function TableHeaderSection({
               variant='ghost'
               className='rounded-full'
               onClick={() => {
-                updateQueryParams(defaultTableState)
+                updateQueryParams(defaultTableState, resourceName)
               }}>
               Reset
             </Button>
@@ -112,7 +124,7 @@ export function TableHeaderSection({
             <div className='w-[200px]'>
               <Select
                 value={searchParams.sortBy || defaultTableState.sortBy}
-                onValueChange={(value) => updateQueryParams({ sortBy: value })}>
+                onValueChange={(value) => updateQueryParams({ sortBy: value }, resourceName)}>
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -136,7 +148,7 @@ export function TableHeaderSection({
                     <Switch
                       checked={searchParams.archived === 'true'}
                       onCheckedChange={(checked) =>
-                        updateQueryParams({ archived: checked.toString() })
+                        updateQueryParams({ archived: checked.toString() }, resourceName)
                       }
                     />
                   </div>
@@ -147,7 +159,7 @@ export function TableHeaderSection({
                         <Switch
                           checked={searchParams[filter.value] === 'true'}
                           onCheckedChange={(checked) =>
-                            updateQueryParams({ [filter.value]: checked.toString() })
+                            updateQueryParams({ [filter.value]: checked.toString() }, resourceName)
                           }
                         />
                       </div>
@@ -159,6 +171,7 @@ export function TableHeaderSection({
           {!noDates && (
             <div className='w-[150px]'>
               <TimeSelector
+                key={selectedDateRange}
                 placeholder='Date Range'
                 items={dateRanges}
                 value={selectedDateRange}

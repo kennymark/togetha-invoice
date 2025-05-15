@@ -78,6 +78,11 @@ export function BaseSelect({
     ? items.filter((item) => item && typeof item === 'object' && 'value' in item && 'label' in item)
     : []
 
+  const selectedItem = safeItems.find((item) => item.value === value)
+  const displayValue = selectedItemRenderer
+    ? selectedItemRenderer(value || '')
+    : selectedItem?.label || placeholder
+
   if (isLoading) {
     return (
       <div
@@ -92,13 +97,7 @@ export function BaseSelect({
   return (
     <Select value={value} onValueChange={onChange} defaultValue={defaultValue}>
       <SelectTrigger className={cn('w-full', triggerClassName)} removeChevron={removeChevron}>
-        {selectedItemRenderer ? (
-          <SelectValue placeholder={placeholder} className='w-full'>
-            {value && selectedItemRenderer(value)}
-          </SelectValue>
-        ) : (
-          <SelectValue placeholder={placeholder} />
-        )}
+        <div className='flex items-center gap-2 w-full'>{displayValue}</div>
       </SelectTrigger>
       <SelectContent className={contentClassName}>
         <SelectGroup>

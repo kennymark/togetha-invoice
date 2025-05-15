@@ -30,7 +30,7 @@ function useDebounce(callback: (value: string) => void, delay: number) {
   )
 }
 
-export function useTableParams(prevSearchParams: TableParams) {
+export function useTableParams(prevSearchParams: TableParams, resourceName: string) {
   const urlParams = useQueryParams()
   const isUpdatingRef = useRef(false)
   const hasInitializedRef = useRef(false)
@@ -44,15 +44,21 @@ export function useTableParams(prevSearchParams: TableParams) {
 
     if (!hasParams && hasDefaultParams) {
       hasInitializedRef.current = true
-      const url = new URL(window.location.href)
+      const params: Record<string, string> = {}
       for (const [key, value] of Object.entries(prevSearchParams)) {
         if (value !== undefined && value !== '') {
-          url.searchParams.set(key, String(value))
+          params[key] = String(value)
         }
       }
-      window.history.replaceState({}, '', url.toString())
+
+      router.visit(window.location.pathname, {
+        data: params,
+        replace: true,
+        preserveState: true,
+        only: [resourceName],
+      })
     }
-  }, [urlParams, prevSearchParams])
+  }, [urlParams, prevSearchParams, resourceName])
 
   // Only parse the URL params once and memoize them
   const parsedQuery = useMemo(() => {
@@ -95,8 +101,10 @@ export function useTableParams(prevSearchParams: TableParams) {
             preserveScroll: true,
             preserveState: true,
             replace: true,
+            only: [resourceName],
             onFinish: () => {
               isUpdatingRef.current = false
+              window.dispatchEvent(new CustomEvent('inertia:success'))
             },
             onError: () => {
               isUpdatingRef.current = false
@@ -140,7 +148,7 @@ export function useTableParams(prevSearchParams: TableParams) {
 
   const updateSearch = useCallback(
     (search: string) => {
-      updateParams({ search })
+      updateParams({ search, page: 1 })
     },
     [updateParams],
   )

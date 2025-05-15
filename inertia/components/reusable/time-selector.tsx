@@ -6,22 +6,22 @@ interface TimeSelectorProps extends Omit<ICustomSelectProps, 'triggerClassName'>
   className?: string
 }
 
-export function TimeSelector({ items, ...props }: TimeSelectorProps) {
+export function TimeSelector({ items, value, ...props }: TimeSelectorProps) {
   return (
     <BaseSelect
       {...props}
+      value={value}
       items={items}
       triggerClassName='rounded-[20px] border-gray-200 bg-white px-4 py-2 hover:bg-gray-50'
       removeChevron
-      selectedItemRenderer={(value) => {
-        const selectedItem = items.find((item) => item.value === value)
-        return (
-          <div className='flex items-center gap-2 w-full'>
-            <Calendar className='size-4 text-gray-500' />
-            <span className='text-sm font-medium'>{selectedItem?.label || value}</span>
-          </div>
-        )
-      }}
+      selectedItemRenderer={(currentValue) => (
+        <div className='flex items-center gap-2 w-full'>
+          <Calendar className='size-4 text-gray-500' />
+          <span className='text-sm font-medium'>
+            {items.find((item) => item.value === currentValue)?.label || props.placeholder}
+          </span>
+        </div>
+      )}
     />
   )
 }

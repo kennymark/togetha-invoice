@@ -16,13 +16,16 @@ interface TableState {
   handleSearch: (searchTerm: string) => void
 }
 
-export function useTableState(): TableState {
+export function useTableState(resourceName: string): TableState {
   // Ensure defaultTableState is properly typed and has all required fields
   const defaultState: TableParams = {
     ...defaultTableState,
   }
 
-  const { query, changePage, changeRows, changeSort, searchTable } = useTableParams(defaultState)
+  const { query, changePage, changeRows, changeSort, searchTable } = useTableParams(
+    defaultState,
+    resourceName,
+  )
 
   // Memoize the current values to prevent unnecessary recalculations
   const currentPage = useMemo(

@@ -26,7 +26,7 @@ export default function CustomersPage({
     handlePageChange,
     handlePageSizeChange,
     handleSearch,
-  } = useTableState()
+  } = useTableState('customers')
 
   const columns = [
     {
@@ -73,6 +73,7 @@ export default function CustomersPage({
         </StatsGrider>
 
         <BaseTable<SingleCustomer>
+          resourceName='customers'
           data={customers.data || []}
           columns={columns}
           emptyMessage='No customers found.'

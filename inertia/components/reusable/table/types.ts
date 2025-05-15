@@ -30,6 +30,7 @@ export interface ExtraFilter {
 }
 
 export interface BaseTableProps<T extends { id: string | number }> {
+  resourceName: string
   data: T[]
   columns: Column<T>[]
   isLoading?: boolean
@@ -68,6 +69,7 @@ export interface TableContainerProps {
 }
 
 export interface TableHeaderSectionProps {
+  resourceName: string
   searchPlaceholder?: string
   extraFilters?: ExtraFilter[]
   noSort?: boolean

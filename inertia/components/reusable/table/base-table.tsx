@@ -44,6 +44,7 @@ export function BaseTable<T extends { id: string | number }>({
   onPageChange,
   onPageSizeChange,
   onSearch,
+  resourceName,
 }: BaseTableProps<T>) {
   const sortedData = useMemo(() => {
     if (!Array.isArray(data)) return []
@@ -81,6 +82,7 @@ export function BaseTable<T extends { id: string | number }>({
       />
       <div className='flex flex-col  bg-white rounded-[12px] border border-[#E7E8E9]'>
         <TableHeaderSection
+          resourceName={resourceName}
           searchPlaceholder={searchPlaceholder}
           extraFilters={extraFilters}
           noFilter={noFilter}
