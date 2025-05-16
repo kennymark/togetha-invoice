@@ -43,7 +43,7 @@ function Login() {
               type='button'
               onClick={() => router.visit(getRoutePath('auth_create_account'))}
               variant='link'
-              className='font-medium text-blue-600 hover:text-blue-500'>
+              className='font-medium text-main hover:opacity-90'>
               Create a new account
             </Button>
           </p>
@@ -60,7 +60,7 @@ function Login() {
                 <Input type='password' placeholder='••••••••' />
               </FormField>
 
-              <Button type='submit' className='w-full'>
+              <Button type='submit' className='w-full bg-main hover:opacity-90 text-white'>
                 Sign in
               </Button>
             </FormBase>

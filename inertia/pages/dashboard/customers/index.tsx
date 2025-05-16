@@ -8,7 +8,7 @@ import { Users } from 'lucide-react'
 import { getRoutePath } from '~/config/get-route-path'
 import { EditButton } from '~/components/edit-button'
 import type { Customers, SingleCustomer } from '~/models/customer.model'
-import { router } from '@inertiajs/react'
+import { Link, router } from '@inertiajs/react'
 import { useTableState } from '~/hooks/use-table-state'
 
 export default function CustomersPage({
@@ -33,10 +33,12 @@ export default function CustomersPage({
       key: 'name',
       title: 'Name',
       render: (_: unknown, customer: SingleCustomer) => (
-        <div className='flex items-center gap-3'>
+        <Link
+          href={getRoutePath('dashboard_customers_details', { customerId: customer.id })}
+          className='flex items-center gap-3'>
           <BaseAvatar size='sm' name={customer.fullName} alt={customer.fullName} />
-          <span>{customer.fullName}</span>
-        </div>
+          <span className='hover:underline'>{customer.fullName}</span>
+        </Link>
       ),
       sortable: true,
     },

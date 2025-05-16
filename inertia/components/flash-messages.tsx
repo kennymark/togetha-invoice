@@ -34,24 +34,18 @@ function FlashMessages() {
   const flash = useFlash() as FlashType
 
   useEffect(() => {
-    console.log('FlashMessages mounted/updated')
-    console.log('Flash state:', JSON.stringify(flash, null, 2))
-
     if (!flash) return
 
     // Handle success message
     if (flash.success?.message) {
-      console.log('Showing success message:', flash.success.message)
       toast.success(flash.success.message)
     }
 
     // Handle validation errors first
     if (flash.errors) {
-      console.log('Processing validation errors:', JSON.stringify(flash.errors, null, 2))
       // Handle array of validation errors
       if (Array.isArray(flash.errors)) {
         for (const error of flash.errors) {
-          console.log('Showing validation error:', error)
           toast.error(formatMessage(error.message, error.field), {
             description: formatFieldName(error.field),
           })
@@ -62,7 +56,6 @@ function FlashMessages() {
         for (const [field, messages] of Object.entries(flash.errors)) {
           if (Array.isArray(messages)) {
             for (const message of messages) {
-              console.log('Showing validation error:', { field, message })
               toast.error(formatMessage(message, field), {
                 description: formatFieldName(field),
               })
@@ -73,7 +66,6 @@ function FlashMessages() {
     }
     // Only show single error message if there are no validation errors
     else if (flash.error?.message) {
-      console.log('Showing single error message:', flash.error.message)
       toast.error(flash.error.message)
     }
   }, [flash])

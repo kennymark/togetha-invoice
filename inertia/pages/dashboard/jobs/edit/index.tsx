@@ -32,7 +32,7 @@ export default function EditJobPage({ job, customers }: EditJobPageProps) {
       customerId: job.customerId,
       priority: job.priority,
       status: job.status,
-      dueDate: new Date(job.dueDate),
+      dueDate: job.dueDate,
     },
   })
 

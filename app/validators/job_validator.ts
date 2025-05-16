@@ -8,7 +8,7 @@ export const createJobValidator = vine.compile(
     category: vine.string(),
     status: vine.enum(['pending', 'completed', 'cancelled']),
     priority: vine.enum(['low', 'medium', 'high']),
-    dueDate: vine.date(),
+    dueDate: vine.string(),
   }),
 )
 
@@ -20,6 +20,6 @@ export const updateJobValidator = vine.compile(
     category: vine.string().optional(),
     status: vine.enum(['pending', 'completed', 'cancelled']).optional(),
     priority: vine.enum(['low', 'medium', 'high']).optional(),
-    dueDate: vine.date().optional(),
+    dueDate: vine.string().optional(),
   }),
 )

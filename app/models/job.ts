@@ -25,7 +25,7 @@ export default class Job extends BaseModel {
 
   @column() declare priority: JobPriority
 
-  @column() declare dueDate: Date
+  @column() declare dueDate: DateTime
 
   @attachment({ preComputeUrl: false, folder: 'job_images' })
   declare images: Attachment[]

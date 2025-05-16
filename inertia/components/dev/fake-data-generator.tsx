@@ -57,7 +57,7 @@ const fakeDataGenerators = {
     customerId: '',
     priority: faker.helpers.arrayElement(['low', 'medium', 'high']),
     status: faker.helpers.arrayElement(['pending', 'completed', 'cancelled']),
-    dueDate: faker.date.future(),
+    dueDate: faker.date.future().toISOString(),
   }),
 
   // Add more generators here as needed, for example:

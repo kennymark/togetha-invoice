@@ -5,7 +5,7 @@ import { DetailsValue } from '~/components/details-value'
 import { getRoutePath } from '~/config/get-route-path'
 import { router } from '@inertiajs/react'
 import { useDisclosure } from '~/hooks/use-disclosure'
-import { ConfirmationDialog } from '~/components/reusable'
+import { ConfirmationDialog, FormBaseHeader } from '~/components/reusable'
 import type { SingleCustomer } from '~/models/customer.model'
 
 export default function CustomerDetailsPage({ customer }: { customer: SingleCustomer }) {
@@ -47,11 +47,32 @@ export default function CustomerDetailsPage({ customer }: { customer: SingleCust
         <DetailsValue label='Customer name' className='mb-10'>
           <span className='text-xl'>{customer.fullName}</span>
         </DetailsValue>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
-          <DetailsValue label='Email'>{customer.email}</DetailsValue>
-          <DetailsValue label='Phone'>{customer.phone}</DetailsValue>
-          <DetailsValue label='Address'>{customer.address}</DetailsValue>
-          <DetailsValue label='Created at'>{formatDate(customer.createdAt, 'full')}</DetailsValue>
+
+        <div className='space-y-8'>
+          {/* Personal Information Section */}
+          <div>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+              <DetailsValue label='Email'>{customer.email}</DetailsValue>
+              <DetailsValue label='Phone'>{customer.phone}</DetailsValue>
+              <DetailsValue label='Address'>{customer.address}</DetailsValue>
+              <DetailsValue label='Post Code'>{customer.postCode}</DetailsValue>
+              <DetailsValue label='City'>{customer.city}</DetailsValue>
+              <DetailsValue label='State'>{customer.state}</DetailsValue>
+              <DetailsValue label='Country'>{customer.country}</DetailsValue>
+              <DetailsValue label='Created at'>
+                {formatDate(customer.createdAt, 'full')}
+              </DetailsValue>
+            </div>
+          </div>
+
+          {/* Business Information Section */}
+          <div>
+            <h3 className='text-lg font-semibold mb-4'>Business Information</h3>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+              <DetailsValue label='Business Name'>{customer.businessName}</DetailsValue>
+              <DetailsValue label='Business Address'>{customer.businessAddress}</DetailsValue>
+            </div>
+          </div>
         </div>
       </DetailsLayout>
     </>

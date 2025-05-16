@@ -7,9 +7,7 @@ export const jobFormSchema = z.object({
   customerId: z.string().min(1, 'Customer is required'),
   priority: z.enum(['low', 'medium', 'high']),
   status: z.enum(['pending', 'completed', 'cancelled']),
-  dueDate: z.date({
-    required_error: 'Due date is required',
-  }),
+  dueDate: z.string().min(1, 'Due date is required'),
 })
 
 export type JobFormValues = z.infer<typeof jobFormSchema>

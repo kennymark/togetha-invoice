@@ -7,7 +7,6 @@ import { PageHeader } from '../../_components/page-header'
 import { router } from '@inertiajs/react'
 import { FakeDataGenerator } from '~/components/dev/fake-data-generator'
 import { jobFormSchema, type JobFormValues } from '~/lib/schemas/jobs'
-import { format } from 'date-fns'
 import useQueryParams from '~/hooks/use-query-params'
 
 interface Customer {
@@ -31,7 +30,7 @@ export default function CreateJobPage({ customers }: CreateJobPageProps) {
       customerId: customerId || '',
       priority: 'low',
       status: 'pending',
-      dueDate: new Date(),
+      dueDate: new Date().toISOString(),
     },
   })
 
@@ -105,7 +104,7 @@ export default function CreateJobPage({ customers }: CreateJobPageProps) {
               <FormField form={form} name='dueDate' label='Due date' showMessage>
                 <DatePicker
                   date={form.watch('dueDate')}
-                  onSelect={(date) => date && form.setValue('dueDate', date)}
+                  onSelect={(date) => form.setValue('dueDate', date || new Date().toISOString())}
                   placeholder='Select due date'
                 />
               </FormField>

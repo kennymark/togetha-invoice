@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { Input, Button, Card } from '~/components/ui'
+import { PhoneInput } from '~/components/ui/phone-input'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormBase, FormField } from '~/components/reusable/base-form'
@@ -68,10 +69,16 @@ function CreateAccount() {
               </FormField>
 
               <FormField form={form} name='contactNumber' label='Contact Number' showMessage>
-                <Input type='tel' placeholder='+1 (555) 000-0000' />
+                <PhoneInput
+                  international
+                  defaultCountry='US'
+                  placeholder='Enter phone number'
+                  value={form.watch('contactNumber')}
+                  onChange={(value) => form.setValue('contactNumber', value)}
+                />
               </FormField>
 
-              <Button type='submit' className='w-full'>
+              <Button type='submit' className='w-full bg-main hover:opacity-90 text-white'>
                 Create Account
               </Button>
             </FormBase>

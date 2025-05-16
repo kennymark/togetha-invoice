@@ -18,6 +18,7 @@ export const ROUTE_PATHS = {
   dashboard_customers: '/dashboard/customers',
   dashboard_customers_create: '/dashboard/customers/create',
   dashboard_customers_edit: '/dashboard/customers/:customerId/edit',
+  dashboard_customers_details: '/dashboard/customers/:customerId',
   dashboard_jobs: '/dashboard/jobs',
   dashboard_jobs_create: '/dashboard/jobs/create',
   dashboard_jobs_edit: '/dashboard/jobs/:jobId/edit',
@@ -28,7 +29,7 @@ export const ROUTE_PATHS = {
   dashboard_payments_create: '/dashboard/payments/create',
   dashboard_finance: '/dashboard/finance',
   dashboard_settings: '/dashboard/settings',
-  dashboard_customers_individual: '/dashboard/customers/:customerId',
+
   not_found: '*',
 } as const
 
@@ -61,9 +62,11 @@ export interface RouteParams {
   dashboard_customers: never
   dashboard_customers_create: never
   dashboard_customers_edit: { customerId: string }
+  dashboard_customers_details: { customerId: string }
   dashboard_jobs: never
   dashboard_jobs_create: never
   dashboard_jobs_edit: { jobId: string }
+  dashboard_jobs_details: { jobId: string }
   dashboard_invoices: never
   dashboard_invoices_create: never
   dashboard_payments: never
@@ -71,5 +74,4 @@ export interface RouteParams {
   dashboard_finance: never
   dashboard_settings: never
   not_found: never
-  dashboard_customers_individual: { customerId: string }
 }
