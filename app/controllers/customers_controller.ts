@@ -61,7 +61,7 @@ export default class CustomersController {
   }
 
   async getCustomer({ params, bouncer, inertia }: HttpContext) {
-    const customer = await Customer.findOrFail(params.id)
+    const customer = await Customer.findOrFail(params.customerId)
     await bouncer.authorize('ownsEntity', customer)
     return inertia.render('dashboard/customers/edit/index', { customer })
   }
@@ -69,7 +69,7 @@ export default class CustomersController {
   async update({ request, params, bouncer, response, session, logger }: HttpContext) {
     try {
       const body = await request.validateUsing(updateCustomerValidator)
-      const customer = await Customer.findOrFail(params.id)
+      const customer = await Customer.findOrFail(params.customerId)
       await bouncer.authorize('ownsEntity', customer)
 
       customer.merge(body)

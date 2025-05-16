@@ -3,6 +3,7 @@ import { Button } from '~/components/ui'
 import { showDevFeatures } from '~/lib/utils'
 import type { CustomerFormValues } from '~/lib/schemas/customer'
 import type { UseFormReset } from 'react-hook-form'
+import type { JobFormValues } from '~/lib/schemas/jobs'
 
 /**
  * Generates a phone number in E.164 format for supported countries
@@ -33,8 +34,17 @@ const fakeDataGenerators = {
     country: faker.helpers.arrayElement(['uk', 'ng', 'us']),
     businessAddress: faker.location.streetAddress(),
   }),
+  job: (): JobFormValues => ({
+    title: faker.lorem.sentence(),
+    description: faker.lorem.paragraph(),
+    category: faker.lorem.word(),
+    customerId: '',
+    priority: faker.helpers.arrayElement(['low', 'medium', 'high']),
+    status: faker.helpers.arrayElement(['pending', 'completed', 'cancelled']),
+    dueDate: faker.date.future(),
+  }),
+
   // Add more generators here as needed, for example:
-  // invoice: () => ({ ... }),
   // job: () => ({ ... }),
   // etc.
 }

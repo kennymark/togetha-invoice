@@ -42,10 +42,11 @@ router
     router.get('/customers/create', ({ inertia }) =>
       inertia.render('dashboard/customers/create/index'),
     )
-    router.get('/customers/edit/:id', [CustomersController, 'getCustomer'])
+    router.get('/customers/:customerId/edit', [CustomersController, 'getCustomer'])
 
-    router.get('/jobs', ({ inertia }) => inertia.render('dashboard/jobs/index'))
-    router.get('/jobs/create', ({ inertia }) => inertia.render('dashboard/jobs/create/index'))
+    router.get('/jobs', [JobsController, 'getAll'])
+    router.get('/jobs/create', [JobsController, 'getCustomersCreateJob'])
+    router.get('/jobs/:jobId/edit', [JobsController, 'editJob'])
 
     router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
     router.get('/invoices/create', ({ inertia }) =>
@@ -80,7 +81,6 @@ router
     router
       .group(() => {
         router.post('/', [CustomersController, 'createCustomer'])
-        router.get('/:id', [CustomersController, 'getCustomer'])
         router.put('/:id', [CustomersController, 'update'])
         router.delete('/:id', [CustomersController, 'delete'])
       })
@@ -88,9 +88,7 @@ router
 
     router
       .group(() => {
-        router.get('/dashboard', [JobsController, 'dashboard'])
         router.post('/', [JobsController, 'createJob'])
-        router.get('/', [JobsController, 'getAll'])
         router.put('/:id', [JobsController, 'update'])
         router.delete('/:id', [JobsController, 'delete'])
       })

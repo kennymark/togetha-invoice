@@ -17,8 +17,10 @@ export const ROUTE_PATHS = {
   dashboard: '/dashboard',
   dashboard_customers: '/dashboard/customers',
   dashboard_customers_create: '/dashboard/customers/create',
+  dashboard_customers_edit: '/dashboard/customers/:customerId/edit',
   dashboard_jobs: '/dashboard/jobs',
   dashboard_jobs_create: '/dashboard/jobs/create',
+  dashboard_jobs_edit: '/dashboard/jobs/:jobId/edit',
   dashboard_invoices: '/dashboard/invoices',
   dashboard_invoices_create: '/dashboard/invoices/create',
   dashboard_payments: '/dashboard/payments',
@@ -57,8 +59,10 @@ export interface RouteParams {
   dashboard: never
   dashboard_customers: never
   dashboard_customers_create: never
+  dashboard_customers_edit: { customerId: string }
   dashboard_jobs: never
   dashboard_jobs_create: never
+  dashboard_jobs_edit: { jobId: string }
   dashboard_invoices: never
   dashboard_invoices_create: never
   dashboard_payments: never

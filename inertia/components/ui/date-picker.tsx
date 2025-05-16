@@ -18,6 +18,21 @@ export function DatePicker({
   placeholder = 'Pick a date',
   disabled,
 }: DatePickerProps) {
+  const handleSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      // Create a new date object to avoid mutating the original
+      const newDate = new Date(selectedDate)
+      // Set time to noon to avoid timezone issues
+      newDate.setHours(12, 0, 0, 0)
+      // Format as ISO string to ensure proper datetime format
+      const isoDate = newDate.toISOString()
+      // Convert back to Date object
+      onSelect?.(new Date(isoDate))
+    } else {
+      onSelect?.(undefined)
+    }
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -36,7 +51,7 @@ export function DatePicker({
         <Calendar
           mode='single'
           selected={date}
-          onSelect={onSelect}
+          onSelect={handleSelect}
           disabled={(date) => disabled || date < new Date(new Date().setHours(0, 0, 0, 0))}
           initialFocus
         />

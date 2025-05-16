@@ -55,7 +55,11 @@ export default function CustomersPage({
       title: '',
       align: 'right' as const,
       render: (_: unknown, customer: SingleCustomer) => (
-        <EditButton onClick={() => router.visit(`/dashboard/customers/edit/${customer.id}`)} />
+        <EditButton
+          onClick={() =>
+            router.visit(getRoutePath('dashboard_customers_edit', { customerId: customer.id }))
+          }
+        />
       ),
     },
   ]
