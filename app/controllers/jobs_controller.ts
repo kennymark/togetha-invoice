@@ -109,4 +109,15 @@ export default class JobsController {
     await job.delete()
     return { message: 'Job deleted successfully' }
   }
+
+  async jobDetails({ params, bouncer, inertia, auth }: HttpContext) {
+    const job = await Job.query()
+      .where('id', params.jobId)
+      .where('user_id', auth.user!.id)
+      .preload('customer', (query) => query.select('id', 'fullName', 'email', 'address'))
+      .firstOrFail()
+    await bouncer.authorize('ownsEntity', job)
+
+    return inertia.render('dashboard/jobs/details', { job })
+  }
 }

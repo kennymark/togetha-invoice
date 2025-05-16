@@ -29,6 +29,7 @@ export default class UsersController {
       session.flash('success', { message: 'Account created successfully! Please log in.' })
       return response.redirect().toPath('/auth/login')
     } catch (error) {
+      console.error(error)
       if (error.messages) {
         session.flash('errors', error.messages)
         return response.redirect().back()
@@ -49,6 +50,7 @@ export default class UsersController {
       session.flash('success', { message: 'Successfully logged in!' })
       return response.redirect().toPath('/dashboard')
     } catch (error) {
+      console.error(error)
       if (error.messages) {
         session.flash('errors', error.messages)
         return response.redirect().back()

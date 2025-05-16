@@ -47,6 +47,7 @@ router
     router.get('/jobs', [JobsController, 'getAll'])
     router.get('/jobs/create', [JobsController, 'getCustomersCreateJob'])
     router.get('/jobs/:jobId/edit', [JobsController, 'editJob'])
+    router.get('/jobs/:jobId', [JobsController, 'jobDetails'])
 
     router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
     router.get('/invoices/create', ({ inertia }) =>

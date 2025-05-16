@@ -7,6 +7,7 @@ import { FormBase, FormField, FormFooter, FormBaseHeader } from './base-form'
 import BaseDropdown from './base-dropdown'
 import BaseDialog from './base-dialog'
 import BaseAvatar from './base-avatar'
+import { ConfirmationDialog } from './base-confirmation-dialog'
 
 export {
   BaseCarousel,
@@ -21,4 +22,5 @@ export {
   BaseDropdown,
   BaseDialog,
   BaseAvatar,
+  ConfirmationDialog,
 }

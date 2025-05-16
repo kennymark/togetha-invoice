@@ -21,6 +21,7 @@ export const ROUTE_PATHS = {
   dashboard_jobs: '/dashboard/jobs',
   dashboard_jobs_create: '/dashboard/jobs/create',
   dashboard_jobs_edit: '/dashboard/jobs/:jobId/edit',
+  dashboard_jobs_details: '/dashboard/jobs/:jobId',
   dashboard_invoices: '/dashboard/invoices',
   dashboard_invoices_create: '/dashboard/invoices/create',
   dashboard_payments: '/dashboard/payments',

@@ -7,7 +7,7 @@ import StatsGrider from '~/components/stats-grider'
 import { Badge } from '~/components/ui'
 import { getRoutePath } from '~/config/get-route-path'
 import { EditButton } from '~/components/edit-button'
-import { router } from '@inertiajs/react'
+import { Link, router } from '@inertiajs/react'
 import { useTableState } from '~/hooks/use-table-state'
 import { formatDate } from '~/lib/helpers'
 
@@ -68,6 +68,13 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
     {
       key: 'title',
       title: 'Job Title',
+      render: (_: unknown, job: Job) => (
+        <Link
+          href={getRoutePath('dashboard_jobs_details', { jobId: job.id })}
+          className='font-semibold hover:underline'>
+          {job.title}
+        </Link>
+      ),
       sortable: true,
     },
     {
