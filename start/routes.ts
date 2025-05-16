@@ -42,6 +42,7 @@ router
     router.get('/customers/create', ({ inertia }) =>
       inertia.render('dashboard/customers/create/index'),
     )
+    router.get('/customers/:customerId', [CustomersController, 'customerDetails'])
     router.get('/customers/:customerId/edit', [CustomersController, 'getCustomer'])
 
     router.get('/jobs', [JobsController, 'getAll'])

@@ -90,10 +90,20 @@ export default class CustomersController {
     }
   }
 
-  async delete({ params, bouncer }: HttpContext) {
+  async customerDetails({ params, bouncer, inertia, auth }: HttpContext) {
+    const customer = await Customer.query()
+      .where('id', params.customerId)
+      .where('user_id', auth.user!.id)
+      .firstOrFail()
+    await bouncer.authorize('ownsEntity', customer)
+
+    return inertia.render('dashboard/customers/details', { customer })
+  }
+
+  async delete({ params, bouncer, response }: HttpContext) {
     const customer = await Customer.findOrFail(params.id)
     await bouncer.authorize('ownsEntity', customer)
     await customer.delete()
-    return { message: 'Customer deleted successfully' }
+    return response.json({ message: 'Customer deleted successfully' })
   }
 }

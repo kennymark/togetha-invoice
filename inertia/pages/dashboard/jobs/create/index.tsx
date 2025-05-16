@@ -8,6 +8,7 @@ import { router } from '@inertiajs/react'
 import { FakeDataGenerator } from '~/components/dev/fake-data-generator'
 import { jobFormSchema, type JobFormValues } from '~/lib/schemas/jobs'
 import { format } from 'date-fns'
+import useQueryParams from '~/hooks/use-query-params'
 
 interface Customer {
   id: string
@@ -19,13 +20,15 @@ interface CreateJobPageProps {
 }
 
 export default function CreateJobPage({ customers }: CreateJobPageProps) {
+  const { customerId } = useQueryParams()
+
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
       title: '',
       description: '',
       category: '',
-      customerId: '',
+      customerId: customerId || '',
       priority: 'low',
       status: 'pending',
       dueDate: new Date(),
@@ -33,13 +36,7 @@ export default function CreateJobPage({ customers }: CreateJobPageProps) {
   })
 
   const onSubmit = (data: JobFormValues) => {
-    // Format the date as YYYY-MM-DD HH:mm:ss for Laravel
-    const formattedData = {
-      ...data,
-      dueDate: data.dueDate ? format(new Date(data.dueDate), 'yyyy-MM-dd HH:mm:ss') : undefined,
-    }
-    console.log('Submitting data:', formattedData)
-    router.post('/jobs', formattedData)
+    router.post('/jobs', data)
   }
 
   return (
