@@ -139,7 +139,7 @@ export default function InvoicesPage() {
     handlePageChange,
     handlePageSizeChange,
     handleSearch,
-  } = useTableState()
+  } = useTableState('invoices')
 
   return (
     <>
@@ -187,6 +187,7 @@ export default function InvoicesPage() {
         </StatsGrider>
         {/* Invoices Table */}
         <BaseTable
+          resourceName='invoices'
           data={invoiceData}
           columns={invoiceColumns}
           title='All Invoices'

@@ -99,7 +99,7 @@ export default function PaymentsPage() {
     handlePageChange,
     handlePageSizeChange,
     handleSearch,
-  } = useTableState()
+  } = useTableState('payments')
 
   return (
     <>
@@ -113,6 +113,7 @@ export default function PaymentsPage() {
       />
       <div className='flex flex-col gap-8 w-full'>
         <BaseTable
+          resourceName='payments'
           data={paymentLinks}
           columns={paymentColumns}
           title={undefined}
