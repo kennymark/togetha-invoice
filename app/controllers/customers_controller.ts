@@ -1,3 +1,4 @@
+import Activity from '#models/activity'
 import Customer from '#models/customer'
 import { validateQueryParams } from '#utils/vine'
 import { createCustomerValidator, updateCustomerValidator } from '#validators/customer_validator'
@@ -16,7 +17,18 @@ export default class CustomersController {
         return response.redirect().back()
       }
 
-      await Customer.create({ ...body, userId: auth.user?.id }, { client: trx })
+      const customer = await Customer.create({ ...body, userId: auth.user?.id }, { client: trx })
+
+      await Activity.create(
+        {
+          userId: auth.user?.id,
+          type: 'created',
+          customerId: customer.id,
+          summary: await Activity.generateSummary('created', customer),
+        },
+        { client: trx },
+      )
+
       await trx.commit()
       logger.info(`Customer created: ${body.fullName}`)
 
@@ -44,12 +56,14 @@ export default class CustomersController {
       endDate,
       sortBy = 'created_at',
       sortOrder = 'desc',
+      search,
     } = await validateQueryParams(request.qs())
 
     const customers = await Customer.query()
       .where('user_id', auth.user!.id)
       .betweenCreatedDates(startDate, endDate)
       .sortBy(sortBy, sortOrder)
+      .search(search, 'customer')
       .paginate(page, perPage)
 
     const totalCustomers = await Customer.query().where('user_id', auth.user!.id).getCount()
@@ -66,14 +80,26 @@ export default class CustomersController {
     return inertia.render('dashboard/customers/edit/index', { customer })
   }
 
-  async update({ request, params, bouncer, response, session, logger }: HttpContext) {
+  async update({ request, params, bouncer, response, session, logger, auth }: HttpContext) {
+    const trx = await db.transaction()
     try {
       const body = await request.validateUsing(updateCustomerValidator)
       const customer = await Customer.findOrFail(params.customerId)
       await bouncer.authorize('ownsEntity', customer)
 
       customer.merge(body)
+
       await customer.save()
+
+      await Activity.create(
+        {
+          userId: auth.user?.id,
+          type: 'updated',
+          customerId: customer.id,
+          summary: await Activity.generateSummary('updated', customer),
+        },
+        { client: trx },
+      )
 
       session.flash('success', { message: 'Customer updated successfully' })
       return response.redirect().toPath('/dashboard/customers')
@@ -100,10 +126,24 @@ export default class CustomersController {
     return inertia.render('dashboard/customers/details', { customer })
   }
 
-  async delete({ params, bouncer, response }: HttpContext) {
+  async delete({ params, bouncer, response, session, logger, auth }: HttpContext) {
     const customer = await Customer.findOrFail(params.id)
-    await bouncer.authorize('ownsEntity', customer)
-    await customer.delete()
-    return response.json({ message: 'Customer deleted successfully' })
+    try {
+      await bouncer.authorize('ownsEntity', customer)
+      await customer.delete()
+
+      await Activity.create({
+        userId: auth.user?.id,
+        type: 'deleted',
+        customerId: customer.id,
+        summary: await Activity.generateSummary('deleted', customer),
+      })
+      session.flash('success', { message: 'Customer deleted successfully' })
+      return response.redirect().toPath('/dashboard/customers')
+    } catch (e) {
+      logger.error(e)
+      session.flash('error', { message: 'Failed to delete customer' })
+      return response.redirect().back()
+    }
   }
 }

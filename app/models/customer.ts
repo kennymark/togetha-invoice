@@ -1,9 +1,10 @@
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { afterDelete, afterSave, BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
 import Invoice from './invoice.js'
 import Job from './job.js'
 import User from './user.js'
+import meiliSearchClient from '#services/meilisearch_service'
 
 export default class Customer extends BaseModel {
   @column({ isPrimary: true }) declare id: string
@@ -41,4 +42,32 @@ export default class Customer extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @afterSave()
+  public static async updateSearchIndex(customer: Customer) {
+    meiliSearchClient
+      .index('customers')
+      .updateDocuments([
+        {
+          id: customer.id,
+          name: customer.fullName,
+          email: customer.email,
+          phone: customer.phone,
+          address: customer.address,
+          postCode: customer.postCode,
+          state: customer.state,
+          city: customer.city,
+          country: customer.country,
+          businessName: customer.businessName,
+          businessAddress: customer.businessAddress,
+          userId: customer.userId,
+        },
+      ])
+      .catch(console.log)
+  }
+
+  @afterDelete()
+  public static async deleteFromSearchIndex(customer: Customer) {
+    meiliSearchClient.index('customers').deleteDocument(customer.id).catch(console.log)
+  }
 }

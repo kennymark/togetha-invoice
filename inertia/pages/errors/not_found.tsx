@@ -1,6 +1,7 @@
-export default function NotFound() {
-  const navigate = useNavigate()
+import { router } from '@inertiajs/react'
+import { SEO } from '~/components/seo'
 
+export default function NotFound() {
   return (
     <>
       <SEO
@@ -17,13 +18,13 @@ export default function NotFound() {
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <button
               type='button'
-              onClick={() => navigate(-1)}
+              onClick={() => window.history.back()}
               className='px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors'>
               Go Back
             </button>
             <button
               type='button'
-              onClick={() => navigate('/')}
+              onClick={() => router.visit('/')}
               className='px-6 py-3 bg-secondary text-white rounded-lg font-medium hover:bg-secondary/80 transition-colors'>
               Return Home
             </button>

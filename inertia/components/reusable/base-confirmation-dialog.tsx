@@ -52,7 +52,7 @@ export function ConfirmationDialog({
   return (
     <AlertDialog open={isOpen} onOpenChange={onToggle}>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
-      <AlertDialogContent className={cn('sm:max-w-[425px]', className)}>
+      <AlertDialogContent className={cn('sm:max-w-[425px] ', className)}>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

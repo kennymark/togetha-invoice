@@ -38,6 +38,8 @@ interface DropdownItemProps {
   icon?: React.ElementType
   /** Display text for the menu item */
   label: string
+  /** Whether to prevent the dropdown from closing when this item is clicked */
+  preventClose?: boolean
 }
 
 interface CustomDropdownProps {
@@ -101,8 +103,7 @@ function BaseDropdown({
           <DropdownMenuItem
             key={item.label}
             className={`px-2 py-2 cursor-pointer w-full min-w-[220px] rounded-[8px]`}
-            onSelect={(event) => {
-              event.preventDefault()
+            onSelect={() => {
               setIsOpen(false)
               if (item.onClick) {
                 item.onClick()
@@ -123,13 +124,7 @@ function BaseDropdown({
                 {item.label}
               </Link>
             ) : (
-              <button
-                onClick={() => {
-                  setIsOpen(false)
-                  item.onClick?.()
-                }}
-                className='flex items-center w-full text-sm cursor-pointer'
-                type='button'>
+              <button className='flex items-center w-full text-sm cursor-pointer' type='button'>
                 {item.icon && (
                   <span className='mr-3'>
                     <item.icon size={20} />

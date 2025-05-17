@@ -9,7 +9,7 @@ export default function Header() {
   const { user } = usePageProps()
 
   const renderAuthLinks = () => {
-    if (user) {
+    if (user.email) {
       return (
         <Link
           href={getRoutePath('dashboard')}
@@ -36,7 +36,7 @@ export default function Header() {
   }
 
   const renderMobileAuthLinks = () => {
-    if (user) {
+    if (user.email) {
       return (
         <Link
           href={getRoutePath('dashboard')}

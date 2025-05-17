@@ -8,11 +8,23 @@ import { BaseTable } from '~/components/reusable/table'
 import { useTableState } from '~/hooks/use-table-state'
 import StatsGrider from '~/components/stats-grider'
 import usePageProps from '~/hooks/use-page-props'
+import { formatCurrency } from '~/utils/format'
+import { formatDistanceToNow } from 'date-fns'
+import { Link } from '@inertiajs/react'
+import type { Activities, ActivityStats, SingleActivity } from '~/models/activity.model'
 
 const EarningsSheet = lazy(() => import('~/pages/dashboard/home/_components/earnings-sheet'))
 
-export default function DashboardPage() {
+export default function DashboardPage({
+  activities,
+  stats,
+}: {
+  activities: Activities
+  stats: ActivityStats
+}) {
   const { user } = usePageProps()
+
+  console.log(activities)
 
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const {
@@ -23,7 +35,95 @@ export default function DashboardPage() {
     handlePageChange,
     handlePageSizeChange,
     handleSearch,
-  } = useTableState()
+  } = useTableState('activities')
+
+  const getAvatarColor = (type: string) => {
+    const colors: Record<string, string> = {
+      paid: 'bg-green-200 text-green-900',
+      created: 'bg-blue-200 text-blue-900',
+      updated: 'bg-yellow-200 text-yellow-900',
+      deleted: 'bg-red-200 text-red-900',
+      completed: 'bg-purple-200 text-purple-900',
+      default: 'bg-gray-200 text-gray-700',
+    }
+    return colors[type] || colors.default
+  }
+
+  const getAvatarText = (activity: SingleActivity) => {
+    if (activity.customer) return activity.customer.fullName.slice(0, 2).toUpperCase()
+    if (activity.job) return 'JB'
+    if (activity.invoice) return 'IN'
+    return 'AC'
+  }
+
+  const getActivityLink = (activity: SingleActivity) => {
+    if (activity.job) {
+      return `/dashboard/jobs/${activity.job.id}`
+    }
+    if (activity.invoice) {
+      return `/dashboard/invoices/${activity.invoice.id}`
+    }
+    if (activity.customer) {
+      return `/dashboard/customers/${activity.customer.id}`
+    }
+    return null
+  }
+
+  const activityColumns = [
+    {
+      key: 'activity',
+      title: 'Activity',
+      render: (value: unknown, item: SingleActivity) => {
+        const link = getActivityLink(item)
+        const content = (
+          <div className='flex items-center gap-3'>
+            <span
+              className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-base ${getAvatarColor(
+                item.type,
+              )}`}>
+              {getAvatarText(item)}
+            </span>
+            <span>{item.summary}</span>
+          </div>
+        )
+
+        if (link) {
+          return (
+            <Link href={link} className='hover:opacity-80 transition-opacity'>
+              {content}
+            </Link>
+          )
+        }
+
+        return content
+      },
+    },
+    {
+      key: 'by',
+      title: 'By',
+      render: (value: unknown, item: SingleActivity) => {
+        const link = item.customer ? `/dashboard/customers/${item.customer.id}` : null
+        const content = item.customer?.fullName || 'You'
+
+        if (link) {
+          return (
+            <Link href={link} className='hover:opacity-80 transition-opacity'>
+              {content}
+            </Link>
+          )
+        }
+
+        return content
+      },
+    },
+    {
+      key: 'date',
+      title: 'Date',
+      render: (value: unknown, item: SingleActivity) =>
+        // @ts-ignore
+        formatDistanceToNow(item.createdAt, { addSuffix: true }),
+    },
+  ]
 
   return (
     <>
@@ -40,28 +140,28 @@ export default function DashboardPage() {
           <StatsCard
             icon={<WalletIcon size={20} />}
             label='Total Earnings'
-            value='£5,000'
-            description='in April 2025'
+            value={formatCurrency(stats.totalEarnings || 0)}
+            description='All time'
             action={() => setIsSheetOpen(true)}
           />
           <StatsCard
             icon={<Document color='black' size={20} />}
             label='Unpaid invoices'
-            value='30'
+            value={stats.unpaidInvoices.toString()}
             description='pending'
           />
           <StatsCard
             icon={<Briefcase color='black' size={20} />}
             label='Active Jobs'
-            value='7'
+            value={stats.activeJobs.toString()}
             description='on going'
           />
         </StatsGrider>
 
         {/* Recent Activity Table */}
         <BaseTable
-          data={recentActivityData}
-          columns={recentActivityColumns}
+          data={activities.data}
+          columns={activityColumns}
           title='Recent activity'
           isNumbered={false}
           containerClassName='mt-8'
@@ -77,165 +177,9 @@ export default function DashboardPage() {
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
           onSearch={handleSearch}
+          resourceName='activities'
         />
       </div>
     </>
   )
 }
-
-// Add mock data and columns for recent activity table
-interface RecentActivityItem {
-  id: string
-  activity: string
-  by: string
-  date: string
-  avatarColor: string
-  avatarText: string
-}
-
-const recentActivityData: RecentActivityItem[] = [
-  {
-    id: '1',
-    activity: '£1200 payment received via payment link',
-    by: 'Sarah White',
-    date: 'Today',
-    avatarColor: 'bg-blue-200 text-blue-900',
-    avatarText: 'SW',
-  },
-  {
-    id: '2',
-    activity: 'Invoice sent to John Smith',
-    by: 'You',
-    date: 'Today',
-    avatarColor: 'bg-gray-200 text-gray-700',
-    avatarText: 'JJ',
-  },
-  {
-    id: '3',
-    activity: 'Job request received',
-    by: 'Lee Ting',
-    date: 'Today',
-    avatarColor: 'bg-purple-600 text-white',
-    avatarText: 'LT',
-  },
-  {
-    id: '4',
-    activity: 'New client onboarded',
-    by: 'Maria Garcia',
-    date: 'Yesterday',
-    avatarColor: 'bg-green-200 text-green-900',
-    avatarText: 'MG',
-  },
-  {
-    id: '5',
-    activity: 'Project milestone completed',
-    by: 'Alex Chen',
-    date: 'Yesterday',
-    avatarColor: 'bg-yellow-200 text-yellow-900',
-    avatarText: 'AC',
-  },
-  {
-    id: '6',
-    activity: 'Contract signed',
-    by: 'David Kim',
-    date: '2 days ago',
-    avatarColor: 'bg-red-200 text-red-900',
-    avatarText: 'DK',
-  },
-  {
-    id: '7',
-    activity: 'Invoice overdue reminder sent',
-    by: 'Emma Wilson',
-    date: '2 days ago',
-    avatarColor: 'bg-indigo-200 text-indigo-900',
-    avatarText: 'EW',
-  },
-  {
-    id: '8',
-    activity: 'New project proposal sent',
-    by: 'James Brown',
-    date: '3 days ago',
-    avatarColor: 'bg-pink-200 text-pink-900',
-    avatarText: 'JB',
-  },
-  {
-    id: '9',
-    activity: 'Client meeting scheduled',
-    by: 'Sophie Taylor',
-    date: '3 days ago',
-    avatarColor: 'bg-orange-200 text-orange-900',
-    avatarText: 'ST',
-  },
-  {
-    id: '10',
-    activity: 'Project scope updated',
-    by: 'Michael Lee',
-    date: '4 days ago',
-    avatarColor: 'bg-teal-200 text-teal-900',
-    avatarText: 'ML',
-  },
-  {
-    id: '11',
-    activity: 'Payment reminder sent',
-    by: 'Lisa Wong',
-    date: '4 days ago',
-    avatarColor: 'bg-cyan-200 text-cyan-900',
-    avatarText: 'LW',
-  },
-  {
-    id: '12',
-    activity: 'New team member added',
-    by: 'Robert Chen',
-    date: '5 days ago',
-    avatarColor: 'bg-lime-200 text-lime-900',
-    avatarText: 'RC',
-  },
-  {
-    id: '13',
-    activity: 'Project deadline extended',
-    by: 'Anna Smith',
-    date: '5 days ago',
-    avatarColor: 'bg-amber-200 text-amber-900',
-    avatarText: 'AS',
-  },
-  {
-    id: '14',
-    activity: 'Client feedback received',
-    by: 'Tom Wilson',
-    date: '6 days ago',
-    avatarColor: 'bg-emerald-200 text-emerald-900',
-    avatarText: 'TW',
-  },
-  {
-    id: '15',
-    activity: 'New service package created',
-    by: 'Rachel Green',
-    date: '6 days ago',
-    avatarColor: 'bg-violet-200 text-violet-900',
-    avatarText: 'RG',
-  },
-]
-
-const recentActivityColumns = [
-  {
-    key: 'activity',
-    title: 'Activity',
-    render: (value: unknown, item: RecentActivityItem) => (
-      <div className='flex items-center gap-3'>
-        <span
-          className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-base ${item.avatarColor}`}>
-          {item.avatarText}
-        </span>
-        <span>{item.activity}</span>
-      </div>
-    ),
-  },
-  {
-    key: 'by',
-    title: 'By',
-  },
-  {
-    key: 'date',
-    title: 'Date',
-  },
-]

@@ -36,7 +36,7 @@ router.get('/reset-password', ({ inertia }) => inertia.render('auth/reset-passwo
 // Dashboard pages
 router
   .group(() => {
-    router.get('/', ({ inertia }) => inertia.render('dashboard/home/index'))
+    router.get('/', [UsersController, 'dashboard'])
 
     router.get('/customers', [CustomersController, 'getAll'])
     router.get('/customers/create', ({ inertia }) =>

@@ -1,21 +1,40 @@
 import Invoice from '#models/invoice'
+import Activity from '#models/activity'
 import { validateQueryParams } from '#utils/vine'
 import { createInvoiceValidator, updateInvoiceValidator } from '#validators/invoice_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class InvoicesController {
-  async createInvoice({ auth, request, logger }: HttpContext) {
+  async createInvoice({ auth, request, logger, session, response }: HttpContext) {
     const trx = await db.transaction()
     try {
       const body = await request.validateUsing(createInvoiceValidator)
-      await Invoice.create({ ...body, userId: auth.user?.id }, { client: trx })
+      const invoice = await Invoice.create({ ...body, userId: auth.user?.id }, { client: trx })
+
+      await Activity.create(
+        {
+          userId: auth.user?.id,
+          type: 'created',
+          invoiceId: invoice.id,
+          summary: await Activity.generateSummary('created', invoice),
+        },
+        { client: trx },
+      )
+
       await trx.commit()
       logger.info(`Invoice created: ${body.title}`)
-      return { message: 'Invoice created successfully' }
+      session.flash('success', { message: 'Invoice created successfully' })
+      return response.redirect().toPath('/dashboard/invoices')
     } catch (e) {
       await trx.rollback()
       logger.error(e)
+
+      if (e.messages) {
+        session.flash('errors', e.messages)
+        return response.redirect().back()
+      }
+
       throw e
     }
   }

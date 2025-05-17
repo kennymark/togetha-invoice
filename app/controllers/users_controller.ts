@@ -11,6 +11,10 @@ import {
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import crypto from 'node:crypto'
+import Activity from '#models/activity'
+import Invoice from '#models/invoice'
+import Job from '#models/job'
+import { validateQueryParams } from '#utils/vine'
 
 export default class UsersController {
   async create({ request, response, logger, session }: HttpContext) {
@@ -186,5 +190,38 @@ export default class UsersController {
     await auth.use('web').logout()
     session.flash('success', { message: 'Successfully logged out!' })
     return response.redirect().toPath('/auth/login')
+  }
+
+  async dashboard({ inertia, auth, request }: HttpContext) {
+    const { page = 1, perPage = 10 } = await validateQueryParams(request.qs())
+
+    const [activities, stats] = await Promise.all([
+      Activity.query()
+        .where('userId', auth.user!.id)
+        .orderBy('createdAt', 'desc')
+        .preload('customer', (query) => query.select('id', 'fullName'))
+        .preload('job', (query) => query.select('id', 'title'))
+        .preload('invoice', (query) => query.select('id', 'title', 'amount'))
+        .paginate(page, perPage),
+      Promise.all([
+        Invoice.query().where('userId', auth.user!.id).where('status', 'paid').getSum('amount'),
+        Job.query().where('userId', auth.user!.id).where('status', 'pending').getCount(),
+        Invoice.query()
+          .where('userId', auth.user!.id)
+          .whereIn('status', ['pending', 'overdue'])
+          .getCount(),
+      ]),
+    ])
+
+    const [totalEarnings, activeJobs, unpaidInvoices] = stats
+
+    return inertia.render('dashboard/home/index', {
+      activities,
+      stats: {
+        totalEarnings: totalEarnings?.total || 0,
+        activeJobs: activeJobs.total || 0,
+        unpaidInvoices: unpaidInvoices.total || 0,
+      },
+    })
   }
 }

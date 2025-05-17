@@ -52,9 +52,8 @@ export default function CustomersCreatePage() {
         backLink='/dashboard/customers'
       />
       <div className='flex flex-col gap-8 w-full'>
-        <FakeDataGenerator type='customer' onGenerate={form.reset} className='px-4' />
-
         <FormBase form={form} onSubmit={handleSubmit} className='space-y-7'>
+          <FakeDataGenerator type='customer' onGenerate={form.reset} className='px-4' />
           <FormBaseHeader title='Basic information' />
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             <FormField form={form} name='fullName' label='Full name' showMessage>

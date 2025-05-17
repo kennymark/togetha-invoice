@@ -5,7 +5,7 @@ import { DetailsValue } from '~/components/details-value'
 import { getRoutePath } from '~/config/get-route-path'
 import { router } from '@inertiajs/react'
 import { useDisclosure } from '~/hooks/use-disclosure'
-import { ConfirmationDialog, FormBaseHeader } from '~/components/reusable'
+import { ConfirmationDialog } from '~/components/reusable'
 import type { SingleCustomer } from '~/models/customer.model'
 
 export default function CustomerDetailsPage({ customer }: { customer: SingleCustomer }) {
@@ -33,6 +33,7 @@ export default function CustomerDetailsPage({ customer }: { customer: SingleCust
         onToggle={onToggle}
         title='Delete customer'
         description='Are you sure you want to delete this customer?'
+        onCancel={onToggle}
         onConfirm={() => {
           router.delete(`/customers/${customer.id}`)
         }}

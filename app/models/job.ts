@@ -1,9 +1,10 @@
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { afterDelete, afterSave, BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { type Attachment, attachment } from '@jrmc/adonis-attachment'
 import type { DateTime } from 'luxon'
 import Customer from './customer.js'
 import User from './user.js'
+import meiliSearchClient from '#services/meilisearch_service'
 
 export type JobStatus = 'pending' | 'completed' | 'cancelled'
 export type JobPriority = 'low' | 'medium' | 'high'
@@ -39,4 +40,14 @@ export default class Job extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @afterSave()
+  public static async updateSearchIndex(job: Job) {
+    meiliSearchClient.index('jobs').updateDocuments([job.toJSON()]).catch(console.log)
+  }
+
+  @afterDelete()
+  public static async deleteFromSearchIndex(job: Job) {
+    meiliSearchClient.index('jobs').deleteDocument(job.id).catch(console.log)
+  }
 }
