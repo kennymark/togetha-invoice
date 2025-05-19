@@ -42,6 +42,7 @@ createInertiaApp({
         <Toaster
           position='top-right'
           className='h-10'
+          closeButton
           style={{ fontFamily: 'system-ui' }}
           toastOptions={{ className: 'p-4' }}
         />

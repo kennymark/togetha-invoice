@@ -20,6 +20,7 @@ const activityTypes = [
   'paid',
   'verified',
   'approved',
+  'passwordUpdated',
 ] as const
 
 export type ActivityType = (typeof activityTypes)[number]
@@ -47,9 +48,20 @@ export default class Activity extends BaseModel {
 
   static async generateSummary(
     type: ActivityType,
-    entity: { id: string; name?: string; title?: string; fullName?: string },
+    entity: { id: string; name?: string; title?: string; fullName?: string; isUser?: boolean },
   ) {
     const entityName = entity.name || entity.title || entity.fullName || 'Unknown'
+
+    // Check if this is a user activity first
+    if (entity.isUser) {
+      if (type === 'passwordUpdated') {
+        return 'You updated your password'
+      }
+      if (type === 'updated') {
+        return 'You updated your account details'
+      }
+    }
+
     const entityType = entity.fullName
       ? 'Customer'
       : entity.title
@@ -62,6 +74,7 @@ export default class Activity extends BaseModel {
       created: `${entityType} "${entityName}" has been created`,
       deleted: `${entityType} "${entityName}" has been deleted`,
       updated: `${entityType} "${entityName}" has been updated`,
+      passwordUpdated: `Password for ${entityType} "${entityName}" has been updated`,
       other: `${entityType} "${entityName}" has been modified`,
       accepted: `${entityType} "${entityName}" has been accepted`,
       rejected: `${entityType} "${entityName}" has been rejected`,

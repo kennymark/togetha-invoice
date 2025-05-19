@@ -29,8 +29,8 @@ function PaginationSection({
   }
 
   return (
-    <div className='flex items-center justify-end gap-8 px-4 py-2 pt-12  bg-background-secondary rounded-b-[12px] text-xs'>
-      <div className='flex items-center gap-2'>
+    <div className='flex flex-col sm:flex-row items-center justify-end gap-4 sm:gap-8 px-4  py-2 pt-8 sm:pt-12 bg-background-secondary rounded-b-[12px] text-xs'>
+      <div className='flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start'>
         <span className='font-semibold text-xs'>Items per page</span>
         <BaseSelect
           value={String(pageSize)}
@@ -47,7 +47,7 @@ function PaginationSection({
         />
       </div>
 
-      <div>
+      <div className='w-full sm:w-auto text-center sm:text-left'>
         {total > 0 && (
           <span className='font-semibold text-xs'>
             {from} - {to} of {total}
@@ -55,8 +55,8 @@ function PaginationSection({
         )}
       </div>
 
-      <Pagination>
-        <PaginationContent>
+      <Pagination className='w-full sm:w-auto'>
+        <PaginationContent className='flex-wrap justify-center sm:justify-end'>
           <PaginationItem>
             <PaginationLink
               role='button'
