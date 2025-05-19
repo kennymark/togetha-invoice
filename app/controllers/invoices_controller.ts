@@ -1,5 +1,6 @@
-import Invoice from '#models/invoice'
 import Activity from '#models/activity'
+import Invoice from '#models/invoice'
+import Service from '#models/service'
 import { validateQueryParams } from '#utils/vine'
 import { createInvoiceValidator, updateInvoiceValidator } from '#validators/invoice_validator'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -11,6 +12,10 @@ export default class InvoicesController {
     try {
       const body = await request.validateUsing(createInvoiceValidator)
       const invoice = await Invoice.create({ ...body, userId: auth.user?.id }, { client: trx })
+
+      for (const service of body.services) {
+        await Service.create({ ...service, invoiceId: invoice.id }, { client: trx })
+      }
 
       await Activity.create(
         {
