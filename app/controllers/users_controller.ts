@@ -1,6 +1,10 @@
+import Activity from '#models/activity'
+import Invoice from '#models/invoice'
+import Job from '#models/job'
 import User from '#models/user'
 import EmailService from '#services/email_service'
 import env from '#start/env'
+import { validateQueryParams } from '#utils/vine'
 import {
   createUserValidator,
   loginValidator,
@@ -9,13 +13,9 @@ import {
   updateUserValidator,
 } from '#validators/user_validator'
 import type { HttpContext } from '@adonisjs/core/http'
+import vine from '@vinejs/vine'
 import { DateTime } from 'luxon'
 import crypto from 'node:crypto'
-import Activity from '#models/activity'
-import Invoice from '#models/invoice'
-import Job from '#models/job'
-import { validateQueryParams } from '#utils/vine'
-import vine from '@vinejs/vine'
 
 export default class UsersController {
   async create({ request, response, logger, session }: HttpContext) {
@@ -48,7 +48,9 @@ export default class UsersController {
   async login({ auth, request, response, session }: HttpContext) {
     try {
       const { email, password } = await request.validateUsing(loginValidator)
+      console.log({ email, password })
       const user = await User.verifyCredentials(email, password)
+      console.log({ user })
 
       await auth.use('web').login(user)
 
