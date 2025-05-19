@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite'
 import { getDirname } from '@adonisjs/core/helpers'
 import inertia from '@adonisjs/inertia/client'
-import react from '@vitejs/plugin-react'
 import adonisjs from '@adonisjs/vite/client'
-import tailwind from 'tailwindcss'
+import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
+import tailwind from 'tailwindcss'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
@@ -28,7 +28,7 @@ export default defineConfig({
    */
   resolve: {
     alias: {
-      '~/': `${getDirname(import.meta.url)}/inertia/`,
+      '@/': `${getDirname(import.meta.url)}/inertia/`,
     },
   },
 })
