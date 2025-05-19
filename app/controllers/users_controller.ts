@@ -48,16 +48,13 @@ export default class UsersController {
   async login({ auth, request, response, session }: HttpContext) {
     try {
       const { email, password } = await request.validateUsing(loginValidator)
-      console.log({ email, password })
       const user = await User.verifyCredentials(email, password)
-      console.log({ user })
 
       await auth.use('web').login(user)
 
       session.flash('success', { message: 'Successfully logged in!' })
       return response.redirect().toPath('/dashboard')
     } catch (error) {
-      console.error(error)
       if (error.messages) {
         session.flash('errors', error.messages)
         return response.redirect().back()
@@ -221,8 +218,6 @@ export default class UsersController {
       const user = await auth.getUserOrFail()
       const emailChanged = user.email !== body.email
 
-      console.log({ body, emailChanged })
-
       user.merge({
         fullName: body.fullName,
         email: body.email,
@@ -239,7 +234,6 @@ export default class UsersController {
       })
 
       if (emailChanged) {
-        console.log('email changed, i am here')
         await auth.use('web').logout()
         session.flash('info', { message: 'Please log in again with your new email' })
         return response.redirect().toPath('/auth/login')
