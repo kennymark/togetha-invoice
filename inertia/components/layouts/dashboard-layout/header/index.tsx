@@ -1,10 +1,11 @@
 import { Button } from '~/components/ui'
 import { BasePopover, BaseAvatar, BaseDropdown } from '~/components/reusable'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, Menu } from 'lucide-react'
 import { Logout, Notification } from 'iconsax-react'
 import usePageProps from '~/hooks/use-page-props'
 import { router } from '@inertiajs/react'
 import FlashMessages from '~/components/flash-messages'
+import { useSidebar } from '~/components/ui/sidebar'
 
 interface QuickAction {
   label: string
@@ -34,11 +35,13 @@ const quickActions: QuickAction[] = [
 
 export default function Header() {
   const { user } = usePageProps()
+  const { toggleSidebar } = useSidebar()
   return (
     <>
       <FlashMessages />
       <header className='h-[72px] bg-white'>
         <div className='h-full px-4 flex items-center justify-between'>
+          <Menu className='size-5 block md:hidden' onClick={toggleSidebar} />
           <div className='flex items-center gap-4 justify-end w-full'>
             <BaseDropdown
               trigger={

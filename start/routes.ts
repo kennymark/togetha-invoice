@@ -59,7 +59,7 @@ router
       inertia.render('dashboard/payments/create/index'),
     )
     router.get('/finance', ({ inertia }) => inertia.render('dashboard/finance/index'))
-    router.get('/settings', ({ inertia }) => inertia.render('dashboard/settings/index'))
+    router.get('/settings', [UsersController, 'settings'])
   })
   .prefix('/dashboard')
   .middleware(middleware.auth())
@@ -76,8 +76,9 @@ router
   .group(() => {
     router
       .group(() => {
-        router.put('/:id', [UsersController, 'update'])
         router.delete('/:id', [UsersController, 'delete'])
+        router.put('/settings', [UsersController, 'updateAccountSettings'])
+        router.put('/password', [UsersController, 'updatePassword'])
       })
       .prefix('/users')
     router

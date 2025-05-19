@@ -15,6 +15,7 @@ import Activity from '#models/activity'
 import Invoice from '#models/invoice'
 import Job from '#models/job'
 import { validateQueryParams } from '#utils/vine'
+import vine from '@vinejs/vine'
 
 export default class UsersController {
   async create({ request, response, logger, session }: HttpContext) {
@@ -61,25 +62,6 @@ export default class UsersController {
       }
 
       session.flash('error', { message: 'Invalid email or password' })
-      return response.redirect().back()
-    }
-  }
-
-  async update({ auth, request, response, session }: HttpContext) {
-    try {
-      const body = await request.validateUsing(updateUserValidator)
-      auth.user?.merge(body)
-      await auth.user?.save()
-
-      session.flash('success', { message: 'Profile updated successfully' })
-      return response.redirect().back()
-    } catch (error) {
-      if (error.messages) {
-        session.flash('errors', error.messages)
-        return response.redirect().back()
-      }
-
-      session.flash('error', { message: 'Failed to update profile' })
       return response.redirect().back()
     }
   }
@@ -223,5 +205,104 @@ export default class UsersController {
         unpaidInvoices: unpaidInvoices.total || 0,
       },
     })
+  }
+
+  async settings({ inertia, auth }: HttpContext) {
+    return inertia.render('dashboard/settings/index', {
+      user: auth.user,
+    })
+  }
+
+  async updateAccountSettings({ request, response, auth, session }: HttpContext) {
+    try {
+      const body = await request.validateUsing(updateUserValidator)
+      const user = await auth.getUserOrFail()
+      const emailChanged = user.email !== body.email
+
+      console.log({ body, emailChanged })
+
+      user.merge({
+        fullName: body.fullName,
+        email: body.email,
+        secondaryEmail: body.secondaryEmail,
+        contactNumber: body.contactNumber,
+      })
+
+      await user.save()
+
+      await Activity.create({
+        userId: user.id,
+        type: 'updated',
+        summary: await Activity.generateSummary('updated', { ...user, isUser: true }),
+      })
+
+      if (emailChanged) {
+        console.log('email changed, i am here')
+        await auth.use('web').logout()
+        session.flash('info', { message: 'Please log in again with your new email' })
+        return response.redirect().toPath('/auth/login')
+      }
+
+      session.flash('success', { message: 'Account settings updated successfully' })
+      return response.redirect().back()
+    } catch (error) {
+      console.error('Error updating account settings:', error)
+      if (error.messages) {
+        session.flash('errors', error.messages)
+        return response.redirect().back()
+      }
+
+      session.flash('error', { message: 'Failed to update account settings' })
+      return response.redirect().back()
+    }
+  }
+
+  async updatePassword({ request, response, auth, session }: HttpContext) {
+    try {
+      const { currentPassword, newPassword, confirmPassword } = await request.validateUsing(
+        vine.compile(
+          vine.object({
+            currentPassword: vine.string(),
+            newPassword: vine.string().minLength(8),
+            confirmPassword: vine.string().minLength(8),
+          }),
+        ),
+      )
+
+      const user = await auth.getUserOrFail()
+
+      const isValidPassword = await User.verifyCredentials(user.email, currentPassword)
+      if (!isValidPassword) {
+        session.flash('error', { message: 'Current password is incorrect' })
+        return response.redirect().back()
+      }
+
+      if (newPassword !== confirmPassword) {
+        session.flash('error', { message: 'New password and confirmation do not match' })
+        return response.redirect().back()
+      }
+
+      user.password = newPassword
+      await user.save()
+
+      await Activity.create({
+        userId: user.id,
+        type: 'passwordUpdated',
+        summary: await Activity.generateSummary('passwordUpdated', { ...user, isUser: true }),
+      })
+
+      await auth.use('web').logout()
+      session.flash('success', { message: 'Password updated successfully. Please log in again.' })
+      return response.redirect().toPath('/auth/login')
+    } catch (error) {
+      console.error('Error updating password:', error)
+      if (error.messages) {
+        session.flash('errors', error.messages)
+        return response.redirect().back()
+      }
+
+      session.flash('error', { message: 'Failed to update password' })
+      return response.redirect().back()
+    }
   }
 }

@@ -191,6 +191,7 @@ function Sidebar({
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
+              border: '0px',
             } as React.CSSProperties
           }
           side={side}>

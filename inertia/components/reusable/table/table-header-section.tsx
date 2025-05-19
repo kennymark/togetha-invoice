@@ -92,10 +92,10 @@ export function TableHeaderSection({
   }
 
   return (
-    <div className='flex flex-col gap-4 px-10 pt-8 pb-6'>
-      <div className='flex flex-wrap items-center justify-between gap-4'>
+    <div className='flex flex-col gap-4 px-4 sm:px-10 pt-4 sm:pt-8 pb-4 sm:pb-6'>
+      <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
         {!noSearch && (
-          <div className='flex-1 min-w-[200px] max-w-[280px]'>
+          <div className='w-full sm:flex-1 sm:min-w-[200px] sm:max-w-[280px]'>
             <div className='flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 w-full'>
               <SearchNormal1 color='#6D747A' size={16} className='mr-2' />
               <input
@@ -103,13 +103,13 @@ export function TableHeaderSection({
                 placeholder={searchPlaceholder}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                className='flex-1 border-none outline-none bg-transparent text-xs placeholder:text-[#6D747A] max-w-[280px]'
+                className='flex-1 border-none outline-none bg-transparent text-xs placeholder:text-[#6D747A] w-full'
                 style={{ fontWeight: 500 }}
               />
             </div>
           </div>
         )}
-        <div className='flex items-center gap-2'>
+        <div className='flex flex-wrap items-center gap-4 w-full sm:w-auto justify-start sm:justify-end'>
           {!noReset && (
             <Button
               variant='ghost'
@@ -121,7 +121,7 @@ export function TableHeaderSection({
             </Button>
           )}
           {!noSort && sortOptions && (
-            <div className='w-[200px]'>
+            <div className='w-full sm:w-[200px]'>
               <Select
                 value={searchParams.sortBy || defaultTableState.sortBy}
                 onValueChange={(value) => updateQueryParams({ sortBy: value }, resourceName)}>
@@ -136,7 +136,7 @@ export function TableHeaderSection({
           {!noFilter && (
             <BasePopover
               trigger={
-                <Button variant='ghost' className='gap-2 rounded-full'>
+                <Button variant='ghost' className='gap-2 rounded-full sm:w-auto justify-start'>
                   <Filter color='#6D747A' size={16} />
                   Filters
                 </Button>
@@ -169,7 +169,7 @@ export function TableHeaderSection({
             />
           )}
           {!noDates && (
-            <div className='w-[150px]'>
+            <div className='w-full sm:w-[150px]'>
               <TimeSelector
                 key={selectedDateRange}
                 placeholder='Date Range'
