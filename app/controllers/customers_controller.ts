@@ -63,7 +63,7 @@ export default class CustomersController {
       .where('user_id', auth.user!.id)
       .betweenCreatedDates(startDate, endDate)
       .sortBy(sortBy, sortOrder)
-      .search(search, 'customer')
+      .search(search, 'customers')
       .paginate(page, perPage)
 
     const totalCustomers = await Customer.query().where('user_id', auth.user!.id).getCount()
