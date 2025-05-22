@@ -8,17 +8,9 @@ import { router } from '@inertiajs/react'
 import { FakeDataGenerator } from '~/components/dev/fake-data-generator'
 import { jobFormSchema, type JobFormValues } from '~/lib/schemas/jobs'
 import useQueryParams from '~/hooks/use-query-params'
+import type Customer from '#models/customer'
 
-interface Customer {
-  id: string
-  fullName: string
-}
-
-interface CreateJobPageProps {
-  customers: Customer[]
-}
-
-export default function CreateJobPage({ customers }: CreateJobPageProps) {
+export default function CreateJobPage({ customers }: { customers: Customer[] }) {
   const { customerId } = useQueryParams()
 
   const form = useForm<JobFormValues>({

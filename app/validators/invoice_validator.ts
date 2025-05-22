@@ -7,15 +7,13 @@ export const createInvoiceValidator = vine.compile(
     invoiceNumber: vine.string(),
     currency: vine.string(),
     dueDate: vine.date(),
-    amount: vine.number(),
-    status: vine.enum(['pending', 'paid', 'overdue']),
     isRecurringInvoice: vine.boolean(),
     isRecurringStartDate: vine.date(),
     isRecurringEndDate: vine.date(),
     isRecurringFrequency: vine.string(),
     isDiscounted: vine.boolean(),
-    isDiscountedAmount: vine.number(),
-    isDiscountedPercentage: vine.number(),
+    isDiscountedType: vine.enum(['amount', 'percentage']),
+    isDiscountedValue: vine.number(),
     notes: vine.string(),
     services: vine.array(
       vine.object({

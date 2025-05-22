@@ -51,9 +51,7 @@ router
     router.get('/jobs/:jobId', [JobsController, 'jobDetails'])
 
     router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
-    router.get('/invoices/create', ({ inertia }) =>
-      inertia.render('dashboard/invoices/create/index'),
-    )
+    router.get('/invoices/create', [InvoicesController, 'getCustomersCreateInvoice'])
     router.get('/payments', ({ inertia }) => inertia.render('dashboard/payments/index'))
     router.get('/payments/create', ({ inertia }) =>
       inertia.render('dashboard/payments/create/index'),

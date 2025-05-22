@@ -8,6 +8,7 @@ import BaseDropdown from './base-dropdown'
 import BaseDialog from './base-dialog'
 import BaseAvatar from './base-avatar'
 import { ConfirmationDialog } from './base-confirmation-dialog'
+import { BaseSwitch } from './base-switch'
 
 export {
   BaseCarousel,
@@ -23,4 +24,5 @@ export {
   BaseDialog,
   BaseAvatar,
   ConfirmationDialog,
+  BaseSwitch,
 }

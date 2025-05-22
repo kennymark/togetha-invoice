@@ -1,4 +1,5 @@
 import Activity from '#models/activity'
+import Customer from '#models/customer'
 import Invoice from '#models/invoice'
 import Service from '#models/service'
 import { validateQueryParams } from '#utils/vine'
@@ -70,6 +71,14 @@ export default class InvoicesController {
   async getById({ params }: HttpContext) {
     const invoice = await Invoice.findOrFail(params.id)
     return invoice
+  }
+
+  async getCustomersCreateInvoice({ auth, inertia }: HttpContext) {
+    const customers = await Customer.query()
+      .where('user_id', auth.user!.id)
+      .select('id', 'fullName', 'email')
+
+    return inertia.render('dashboard/invoices/create/index', { customers })
   }
 
   async update({ request, params, bouncer }: HttpContext) {
