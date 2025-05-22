@@ -5,94 +5,62 @@ import { BaseTable } from '~/components/reusable/table'
 import { FileText, Clock, ChevronDown } from 'lucide-react'
 import { Button, Badge } from '~/components/ui'
 import BaseSheet from '~/components/reusable/base-sheet'
-import { useState } from 'react'
 import StatsGrider from '~/components/stats-grider'
 import { BaseDropdown } from '~/components/reusable'
 import { getRoutePath } from '~/config/get-route-path'
 import { useTableState } from '~/hooks/use-table-state'
 import { router } from '@inertiajs/react'
+import { useDisclosure } from '~/hooks/use-disclosure'
+import type { SingleInvoice, Invoices, InvoiceStats } from '~/models/invoice'
+import { formatCurrency } from '~/utils/format'
+import { formatDate } from '~/lib/helpers'
 
-interface Invoice {
-  id: string
-  customer: string
-  email: string
-  created: string
-  amount: string
-  dueDate: string
-  status: 'Paid' | 'Upcoming' | 'Overdue' | 'Draft'
-}
-
-const invoiceData: Invoice[] = [
+const statusColorMap: Record<SingleInvoice['status'], 'completed' | 'todo' | 'high' | 'secondary'> =
   {
-    id: '1',
-    customer: 'Mpho Herbulot',
-    email: 'jesus.bjarnasin99@ntlworld.dev',
-    created: '2 days ago',
-    amount: '£400',
-    dueDate: '20th Jun 2024',
-    status: 'Paid',
-  },
-  {
-    id: '2',
-    customer: 'Mpho Herbulot',
-    email: 'jesus.bjarnasin99@ntlworld.dev',
-    created: '6 days ago',
-    amount: '£233.5',
-    dueDate: '20th Jun 2024',
-    status: 'Upcoming',
-  },
-  {
-    id: '3',
-    customer: 'Mpho Herbulot',
-    email: 'jesus.bjarnasin99@ntlworld.dev',
-    created: '6 days ago',
-    amount: '£90',
-    dueDate: '20th Jun 2024',
-    status: 'Overdue',
-  },
-  {
-    id: '4',
-    customer: 'Mpho Herbulot',
-    email: 'jesus.bjarnasin99@ntlworld.dev',
-    created: '-',
-    amount: '£108',
-    dueDate: '-',
-    status: 'Draft',
-  },
-]
-
-const statusColorMap: Record<Invoice['status'], 'completed' | 'todo' | 'high' | 'secondary'> = {
-  Paid: 'completed',
-  Upcoming: 'todo',
-  Overdue: 'high',
-  Draft: 'secondary',
-}
+    paid: 'completed',
+    pending: 'todo',
+    overdue: 'high',
+  }
 
 const invoiceColumns = [
   {
     key: 'customer',
     title: 'Customer',
-    render: (_: unknown, item: Invoice) => (
+    render: (_: unknown, item: SingleInvoice) => (
       <div>
-        <div>{item.customer}</div>
-        <div className='text-xs text-gray-400'>{item.email}</div>
+        <div>{item.customer.fullName}</div>
+        <div className='text-xs text-gray-400'>{item.customer.email}</div>
       </div>
     ),
   },
-  { key: 'created', title: 'Created' },
-  { key: 'amount', title: 'Total amount' },
-  { key: 'dueDate', title: 'Due date' },
+  {
+    key: 'created',
+    title: 'Created',
+    render: (_: unknown, item: SingleInvoice) => <div>{formatDate(item.createdAt, 'medium')}</div>,
+  },
+  {
+    key: 'amount',
+    title: 'Total amount',
+    render: (_: unknown, item: SingleInvoice) => (
+      <div>{formatCurrency(item.amount, item.currency)}</div>
+    ),
+  },
+  {
+    key: 'dueDate',
+    title: 'Due date',
+    render: (_: unknown, item: SingleInvoice) => <div>{formatDate(item.dueDate, 'medium')}</div>,
+  },
   {
     key: 'status',
     title: 'Status',
-    render: (_: unknown, item: Invoice) => (
+    render: (_: unknown, item: SingleInvoice) => (
       <Badge variant={statusColorMap[item.status]}>{item.status}</Badge>
     ),
   },
   {
     key: 'actions',
     title: '',
-    render: (_: unknown, item: Invoice) => (
+    render: (_: unknown, item: SingleInvoice) => (
       <div className='flex gap-2'>
         <BaseDropdown
           trigger={
@@ -129,8 +97,13 @@ const invoiceColumns = [
   },
 ]
 
-export default function InvoicesPage() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
+interface PageProps {
+  invoices: Invoices
+  stats: InvoiceStats
+}
+
+export default function InvoicesPage({ invoices, stats }: PageProps) {
+  const { isOpen, onToggle } = useDisclosure()
   const {
     currentPage,
     currentPerPage,
@@ -144,24 +117,20 @@ export default function InvoicesPage() {
   return (
     <>
       <BaseSheet
-        open={isSheetOpen}
-        setOpen={setIsSheetOpen}
+        open={isOpen}
+        setOpen={onToggle}
         title='Overdue Invoices'
         description='View your overdue invoices'>
         <div className='p-4'>
           <h3 className='text-lg font-semibold mb-4'>Overdue Invoices</h3>
           <div className='space-y-4'>
             <div className='flex justify-between items-center'>
-              <span>Total Earnings</span>
-              <span className='font-medium'>£5,000</span>
+              <span>Total Invoices</span>
+              <span className='font-medium'>{stats.totalInvoices}</span>
             </div>
             <div className='flex justify-between items-center'>
-              <span>Paid Invoices</span>
-              <span className='font-medium'>£4,200</span>
-            </div>
-            <div className='flex justify-between items-center'>
-              <span>Pending Payments</span>
-              <span className='font-medium'>£800</span>
+              <span>Overdue Invoices</span>
+              <span className='font-medium'>{stats.overdueInvoices}</span>
             </div>
           </div>
         </div>
@@ -174,21 +143,21 @@ export default function InvoicesPage() {
           <StatsCard
             icon={<FileText size={24} />}
             label='Total Invoices sent'
-            value='225'
+            value={stats.totalInvoices.toString()}
             description=''
           />
           <StatsCard
             icon={<Clock size={24} />}
             label='Overdue invoices'
-            value='30'
+            value={stats.overdueInvoices.toString()}
             description='pending'
-            action={() => setIsSheetOpen(true)}
+            action={onToggle}
           />
         </StatsGrider>
         {/* Invoices Table */}
         <BaseTable
           resourceName='invoices'
-          data={invoiceData}
+          data={invoices.data}
           columns={invoiceColumns}
           title='All Invoices'
           isNumbered={true}

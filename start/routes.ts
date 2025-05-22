@@ -50,7 +50,7 @@ router
     router.get('/jobs/:jobId/edit', [JobsController, 'editJob'])
     router.get('/jobs/:jobId', [JobsController, 'jobDetails'])
 
-    router.get('/invoices', ({ inertia }) => inertia.render('dashboard/invoices/index'))
+    router.get('/invoices', [InvoicesController, 'getAll'])
     router.get('/invoices/create', [InvoicesController, 'getCustomersCreateInvoice'])
     router.get('/payments', ({ inertia }) => inertia.render('dashboard/payments/index'))
     router.get('/payments/create', ({ inertia }) =>
@@ -107,7 +107,6 @@ router
     router
       .group(() => {
         router.post('/', [InvoicesController, 'createInvoice'])
-        router.get('/', [InvoicesController, 'getAll'])
         router.put('/:id', [InvoicesController, 'update'])
         router.delete('/:id', [InvoicesController, 'delete'])
       })

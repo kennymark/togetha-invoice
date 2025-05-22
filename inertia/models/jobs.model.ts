@@ -26,8 +26,6 @@ export interface Jobs {
 }
 
 export interface JobStats {
-  totalJobs: number
-  totalPendingJobs: number
-  totalCompletedJobs: number
-  totalCancelledJobs: number
+  pendingJobs: number
+  completedJobs: number
 }

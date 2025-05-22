@@ -10,47 +10,27 @@ import { EditButton } from '~/components/edit-button'
 import { Link, router } from '@inertiajs/react'
 import { useTableState } from '~/hooks/use-table-state'
 import { formatDate } from '~/lib/helpers'
+import type { JobStats, SingleJob } from '~/models/jobs.model'
+import type { Meta } from '~/models/extra.model'
 
-interface Job {
-  id: string
-  title: string
-  description: string
-  category: string
-  status: 'pending' | 'completed' | 'cancelled'
-  priority: 'low' | 'medium' | 'high'
-  dueDate: string
-  customer: {
-    id: string
-    fullName: string
-  }
-}
-
-interface JobsPageProps {
-  jobs: {
-    data: Job[]
-    meta: {
-      total: number
-      per_page: number
-      current_page: number
-      last_page: number
-    }
-  }
-  stats: {
-    pendingJobs: number
-    completedJobs: number
-  }
-}
-
-const priorityVariantMap: Record<Job['priority'], 'low' | 'medium' | 'high'> = {
+const priorityVariantMap: Record<SingleJob['priority'], 'low' | 'medium' | 'high'> = {
   low: 'low',
   medium: 'medium',
   high: 'high',
 }
 
-const statusVariantMap: Record<Job['status'], 'todo' | 'completed' | 'high'> = {
+const statusVariantMap: Record<SingleJob['status'], 'todo' | 'completed' | 'high'> = {
   pending: 'todo',
   completed: 'completed',
   cancelled: 'high',
+}
+
+interface JobsPageProps {
+  jobs: {
+    data: SingleJob[]
+    meta: Meta
+  }
+  stats: JobStats
 }
 
 export default function JobsPage({ jobs, stats }: JobsPageProps) {
@@ -68,7 +48,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
     {
       key: 'title',
       title: 'Job Title',
-      render: (_: unknown, job: Job) => (
+      render: (_: unknown, job: SingleJob) => (
         <Link
           href={getRoutePath('dashboard_jobs_details', { jobId: job.id })}
           className='font-semibold hover:underline'>
@@ -80,7 +60,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
     {
       key: 'customer',
       title: 'Customer',
-      render: (_: unknown, job: Job) => (
+      render: (_: unknown, job: SingleJob) => (
         <div className='font-semibold'>{job.customer.fullName}</div>
       ),
       sortable: true,
@@ -93,7 +73,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
     {
       key: 'priority',
       title: 'Priority',
-      render: (_: unknown, job: Job) => (
+      render: (_: unknown, job: SingleJob) => (
         <Badge variant={priorityVariantMap[job.priority]}>{job.priority}</Badge>
       ),
       sortable: true,
@@ -101,7 +81,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
     {
       key: 'status',
       title: 'Status',
-      render: (_: unknown, job: Job) => (
+      render: (_: unknown, job: SingleJob) => (
         <Badge variant={statusVariantMap[job.status]}>{job.status}</Badge>
       ),
       sortable: true,
@@ -109,7 +89,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
     {
       key: 'dueDate',
       title: 'Due Date',
-      render: (_: unknown, job: Job) => (
+      render: (_: unknown, job: SingleJob) => (
         <div className='font-medium'>{formatDate(job.dueDate, 'medium')}</div>
       ),
       sortable: true,
@@ -118,7 +98,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
       key: 'actions',
       title: '',
       align: 'right' as const,
-      render: (_: unknown, job: Job) => (
+      render: (_: unknown, job: SingleJob) => (
         <EditButton
           onClick={() => router.visit(getRoutePath('dashboard_jobs_edit', { jobId: job.id }))}
         />
@@ -146,7 +126,7 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
           />
         </StatsGrider>
 
-        <BaseTable<Job>
+        <BaseTable<SingleJob>
           resourceName='jobs'
           data={jobs.data}
           columns={columns}

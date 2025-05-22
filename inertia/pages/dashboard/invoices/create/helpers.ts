@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react'
 import type { UseFormReturn } from 'react-hook-form'
 import type { InvoiceFormValues } from '~/lib/schemas/invoice'
 
@@ -18,10 +19,14 @@ export const calculateInvoiceTotal = (
   subtotal: number,
   discount: number,
   discountType: 'amount' | 'percentage',
+  form: UseFormReturn<InvoiceFormValues>,
 ): number => {
   if (discountType === 'percentage') {
-    return Number((subtotal * (1 - discount / 100)).toFixed(2))
+    const discountAmount = subtotal * (discount / 100)
+    form.setValue('amount', subtotal - discountAmount)
+    return Number((subtotal - discountAmount).toFixed(2))
   }
+  form.setValue('amount', subtotal - discount)
   return Number((subtotal - discount).toFixed(2))
 }
 
@@ -69,7 +74,6 @@ export const handleRemoveService = (form: UseFormReturn<InvoiceFormValues>, inde
 }
 
 export const handleSubmit = (data: InvoiceFormValues) => {
-  // Ensure all numeric values are properly converted
   const processedData = {
     ...data,
     services: data.services.map((service: InvoiceFormValues['services'][0]) => ({
@@ -79,5 +83,5 @@ export const handleSubmit = (data: InvoiceFormValues) => {
       totalPrice: Number(service.totalPrice),
     })),
   }
-  console.log('invoice data', processedData)
+  router.post('/invoices', processedData)
 }

@@ -5,6 +5,7 @@ export const invoiceFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   customerId: z.string().min(1, 'Customer is required'),
   currency: z.enum(['gbp', 'usd', 'eur']),
+  amount: z.number().min(0, 'Total must be positive'),
   dueDate: z.string(),
   isRecurringInvoice: z.boolean(),
   isRecurringStartDate: z.string(),
@@ -24,7 +25,7 @@ export const invoiceFormSchema = z.object({
       }),
     )
     .min(1, 'At least one item is required'),
-  notes: z.string().optional(),
+  notes: z.string(),
 })
 
 export type InvoiceFormValues = z.infer<typeof invoiceFormSchema>

@@ -4,6 +4,7 @@ import { showDevFeatures } from '~/lib/utils'
 import type { CustomerFormValues } from '~/lib/schemas/customer'
 import type { UseFormReset } from 'react-hook-form'
 import type { JobFormValues } from '~/lib/schemas/jobs'
+import type { InvoiceFormValues } from '~/lib/schemas/invoice'
 
 /**
  * Generates a phone number in E.164 format for supported countries
@@ -59,6 +60,56 @@ const fakeDataGenerators = {
     status: faker.helpers.arrayElement(['pending', 'completed', 'cancelled']),
     dueDate: faker.date.future().toISOString(),
   }),
+  invoice: (): InvoiceFormValues => ({
+    invoiceNumber: `INV-${faker.number.int({ min: 1000, max: 9999 })}`,
+    customerId: '',
+    title: faker.helpers.arrayElement([
+      'Professional Services Invoice',
+      'Consulting Services',
+      'Project Development',
+      'Maintenance Services',
+      'Technical Support',
+      'Software Development',
+      'Design Services',
+      'Marketing Services',
+      'Training Services',
+      'Equipment Rental',
+    ]),
+    currency: faker.helpers.arrayElement(['gbp', 'usd', 'eur']),
+    dueDate: faker.date.future().toISOString(),
+    isRecurringInvoice: faker.datatype.boolean(),
+    amount: faker.number.int({ min: 100, max: 1000 }),
+    isRecurringStartDate: faker.date.future().toISOString(),
+    isRecurringEndDate: faker.date.future({ years: 1 }).toISOString(),
+    isRecurringFrequency: faker.helpers.arrayElement(['daily', 'weekly', 'monthly', 'yearly']),
+    isDiscounted: faker.datatype.boolean(),
+    isDiscountedType: faker.helpers.arrayElement(['amount', 'percentage']),
+    isDiscountedValue: faker.number.int({ min: 5, max: 50 }),
+    services: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () => ({
+      name: faker.helpers.arrayElement([
+        'Web Development',
+        'UI/UX Design',
+        'Content Writing',
+        'SEO Optimization',
+        'Social Media Management',
+        'Email Marketing',
+        'Video Production',
+        'Photography',
+        'Consulting',
+        'Training',
+        'Maintenance',
+        'Technical Support',
+        'Cloud Services',
+        'Data Analysis',
+        'Project Management',
+      ]),
+      description: faker.lorem.sentence(),
+      quantity: faker.number.int({ min: 1, max: 10 }),
+      unitPrice: faker.number.float({ min: 50, max: 1000, fractionDigits: 2 }),
+      totalPrice: 0, // This will be calculated by the form
+    })),
+    notes: faker.lorem.paragraph(),
+  }),
 
   // Add more generators here as needed, for example:
   // job: () => ({ ... }),
@@ -84,6 +135,10 @@ interface FakeDataGeneratorProps<T extends FakeDataType> {
    * Optional button variant
    */
   variant?: 'default' | 'outline' | 'ghost'
+  /**
+   * Optional callback to trigger after generating data
+   */
+  onAfterGenerate?: () => void
 }
 
 /**
@@ -95,12 +150,14 @@ export function FakeDataGenerator<T extends FakeDataType>({
   onGenerate,
   className = '',
   variant = 'outline',
+  onAfterGenerate,
 }: FakeDataGeneratorProps<T>) {
   if (!showDevFeatures()) return null
 
   const handleClick = () => {
     const fakeData = fakeDataGenerators[type]()
-    onGenerate(fakeData as any) // Type assertion needed due to generic constraints
+    onGenerate(fakeData as unknown as ReturnType<(typeof fakeDataGenerators)[T]>)
+    onAfterGenerate?.()
   }
 
   return (

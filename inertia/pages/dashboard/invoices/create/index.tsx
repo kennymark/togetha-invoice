@@ -8,8 +8,8 @@ import type Customer from '#models/customer'
 import useQueryParams from '~/hooks/use-query-params'
 import { PlusIcon, Trash2Icon } from 'lucide-react'
 import { OnlyShowIf } from '~/components/conditionals'
-import { router } from '@inertiajs/react'
 import { invoiceFormSchema } from '~/lib/schemas/invoice'
+import { FakeDataGenerator } from '~/components/dev/fake-data-generator'
 import {
   calculateInvoiceSubtotal,
   calculateInvoiceTotal,
@@ -34,6 +34,7 @@ export default function InvoicesCreatePage({ customers }: { customers: Customer[
 
   const form = useForm({
     resolver: zodResolver(invoiceFormSchema),
+    mode: 'onChange',
     defaultValues: {
       invoiceNumber: '',
       customerId: customerId || '',
@@ -62,7 +63,7 @@ export default function InvoicesCreatePage({ customers }: { customers: Customer[
   const isRecurringEndDate = form.watch('isRecurringEndDate')
 
   const subtotal = calculateInvoiceSubtotal(services)
-  const total = calculateInvoiceTotal(subtotal, isDiscountedValue, isDiscountedType)
+  const total = calculateInvoiceTotal(subtotal, isDiscountedValue, isDiscountedType, form)
 
   const getDiscountDisplay = () => {
     if (!isDiscounted) return null
@@ -83,7 +84,20 @@ export default function InvoicesCreatePage({ customers }: { customers: Customer[
       <PageHeader title='Create Invoice' description='Generate professional invoices in seconds' />
       <div className='flex flex-col gap-8 w-full'>
         <FormBase form={form} onSubmit={handleSubmit} className='space-y-7'>
+          <FakeDataGenerator
+            type='invoice'
+            onGenerate={form.reset}
+            onAfterGenerate={() => {
+              form.trigger()
+              form.getValues('services').forEach((_, index) => {
+                const quantity = form.getValues(`services.${index}.quantity`)
+                const unitPrice = form.getValues(`services.${index}.unitPrice`)
+                form.setValue(`services.${index}.totalPrice`, quantity * unitPrice)
+              })
+            }}
+          />
           <FormBaseHeader title='Invoice details' />
+
           <FormField form={form} name='customerId' label='Customer' showError>
             <BaseSelect
               placeholder='Select customer'
@@ -298,8 +312,8 @@ export default function InvoicesCreatePage({ customers }: { customers: Customer[
                 </FormField>
 
                 <div className='col-span-2 flex items-center gap-2 justify-end'>
-                  <div>
-                    <span className='text-sm font-medium block mb-2'>Total</span>
+                  <div className='flex flex-col items-end'>
+                    <span className=' text-sm font-medium block mb-2'>Total</span>
                     <div className='text-base font-medium'>
                       {formatCurrency(form.watch(`services.${index}.totalPrice`), currency)}
                     </div>

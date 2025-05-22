@@ -1,4 +1,4 @@
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
 import Customer from './customer.js'
@@ -25,8 +25,8 @@ export default class Invoice extends BaseModel {
   @column() declare isRecurringFrequency: string
 
   @column() declare isDiscounted: boolean
-  @column() declare isDiscountedAmount: number
-  @column() declare isDiscountedPercentage: number
+  @column() declare isDiscountedType: string
+  @column() declare isDiscountedValue: number
 
   @column() declare notes: string
 
@@ -41,4 +41,9 @@ export default class Invoice extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @beforeCreate()
+  static async beforeCreate(invoice: Invoice) {
+    invoice.status = 'pending'
+  }
 }
