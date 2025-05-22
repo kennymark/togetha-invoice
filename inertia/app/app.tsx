@@ -9,6 +9,7 @@ import { Toaster } from 'sonner'
 import DashboardLayout from '~/components/layouts/dashboard-layout'
 import MarketingLayout from '~/components/layouts/marketing-layout'
 import type React from 'react'
+import { ErrorBoundary } from '~/components/error-boundary'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
@@ -37,7 +38,7 @@ createInertiaApp({
   setup({ el, App, props }) {
     hydrateRoot(
       el,
-      <>
+      <ErrorBoundary>
         <App {...props} />
         <Toaster
           position='top-right'
@@ -46,7 +47,7 @@ createInertiaApp({
           style={{ fontFamily: 'system-ui' }}
           toastOptions={{ className: 'p-4' }}
         />
-      </>,
+      </ErrorBoundary>,
     )
   },
 })

@@ -21,8 +21,18 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * to return the HTML contents to send as a response.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
-    '404': (error, { inertia }) => inertia.render('errors/not_found', { error }),
-    '500..599': (error, { inertia }) => inertia.render('errors/server_error', { error }),
+    '404': (error, ctx) => {
+      if (ctx.inertia) {
+        return ctx.inertia.render('errors/not_found', { error })
+      }
+      return ctx.response.status(404).send({ error: 'Not found' })
+    },
+    '500..599': (error, ctx) => {
+      if (ctx.inertia) {
+        return ctx.inertia.render('errors/server_error', { error })
+      }
+      return ctx.response.status(500).send({ error: 'Internal server error' })
+    },
   }
 
   /**
@@ -30,18 +40,59 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: any, ctx: HttpContext) {
-    const { response } = ctx
-    console.log(error)
-    if (error.code === 'E_VALIDATION_EXCEPTION') {
-      console.log('error', error.messages)
-      return response.badRequest({
-        error: 'Validation failed',
-        type: 'validation',
-        messages: error.messages,
-      })
+    const { response, session } = ctx
+
+    // Handle Inertia requests differently
+    if (ctx.inertia) {
+      if (error.code === 'E_UNAUTHORIZED_ACCESS') {
+        return response.redirect().toPath('/auth/login')
+      }
+
+      if (error.code === 'E_NOT_FOUND') {
+        return response.redirect().toPath('/errors/not-found')
+      }
+
+      if (error.code === 'E_UNAUTHORIZED_ACCESS') {
+        return response.redirect().toPath('/auth/login')
+      }
+      if (error.code === 'E_VALIDATION_EXCEPTION' || error.code === 'E_VALIDATION_ERROR') {
+        session.flash('errors', error.messages)
+        return response.redirect().back()
+      }
+
+      if (error.code === 'E_AUTHORIZATION_FAILURE') {
+        session.flash('error', { message: 'You are not authorized to perform this action' })
+        return response.redirect().back()
+      }
+
+      if (error.code === 'E_INVALID_CREDENTIALS') {
+        session.flash('error', { message: 'Your email or password is incorrect' })
+        return response.redirect().back()
+      }
+
+      if (error.code === 'E_BAD_CSRF_TOKEN') {
+        session.flash('error', { message: 'CSRF token mismatch' })
+        return response.redirect().back()
+      }
+
+      // Handle database errors
+      if (error.code === '23502') {
+        session.flash('error', {
+          message: `The ${error.column} field is required and can not be null`,
+        })
+        return response.redirect().back()
+      }
+
+      if (error.code === '23505') {
+        session.flash('error', {
+          message: convertToReadableFormat(error.detail),
+        })
+        return response.redirect().back()
+      }
     }
 
-    if (error.code === 'E_VALIDATION_ERROR') {
+    // Handle API requests (non-Inertia)
+    if (error.code === 'E_VALIDATION_EXCEPTION' || error.code === 'E_VALIDATION_ERROR') {
       return response.badRequest({
         error: 'Validation failed',
         type: 'validation',
@@ -50,7 +101,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     }
 
     if (error.code === 'E_AUTHORIZATION_FAILURE') {
-      return ctx.response.status(403).send({
+      return response.status(403).send({
         error: 'You are not authorized to perform this action',
         type: 'auth',
       })
@@ -67,7 +118,6 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     }
 
-    // db field can not be null
     if (error.code === '23502') {
       return response.internalServerError({
         error: `The ${error.column} field is required and can not be null`,
@@ -75,7 +125,6 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     }
 
-    // duplicate key error
     if (error.code === '23505') {
       return response.badRequest({ error: convertToReadableFormat(error.detail) })
     }

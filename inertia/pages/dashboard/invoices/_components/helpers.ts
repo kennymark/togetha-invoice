@@ -7,27 +7,35 @@ export const calculateServiceTotal = (quantity: number, unitPrice: number): numb
   return Number((quantity * unitPrice).toFixed(2))
 }
 
-export const calculateInvoiceSubtotal = (services: InvoiceFormValues['services']): number => {
-  return Number(
-    services
-      .reduce((acc: number, curr: InvoiceFormValues['services'][0]) => acc + curr.totalPrice, 0)
-      .toFixed(2),
-  )
+export const calculateInvoiceSubtotal = (
+  services: InvoiceFormValues['services'] | undefined,
+): number => {
+  if (!services?.length) return 0
+
+  const total = services.reduce((acc: number, curr: InvoiceFormValues['services'][0]) => {
+    const price = Number(curr.totalPrice) || 0
+    return acc + price
+  }, 0)
+
+  return Number(total.toFixed(2))
 }
 
 export const calculateInvoiceTotal = (
   subtotal: number,
-  discount: number,
-  discountType: 'amount' | 'percentage',
+  discount: number | undefined,
+  discountType: 'amount' | 'percentage' | undefined,
   form: UseFormReturn<InvoiceFormValues>,
 ): number => {
-  if (discountType === 'percentage') {
-    const discountAmount = subtotal * (discount / 100)
+  const safeDiscount = discount ?? 0
+  const safeDiscountType = discountType ?? 'amount'
+
+  if (safeDiscountType === 'percentage') {
+    const discountAmount = subtotal * (safeDiscount / 100)
     form.setValue('amount', subtotal - discountAmount)
     return Number((subtotal - discountAmount).toFixed(2))
   }
-  form.setValue('amount', subtotal - discount)
-  return Number((subtotal - discount).toFixed(2))
+  form.setValue('amount', subtotal - safeDiscount)
+  return Number((subtotal - safeDiscount).toFixed(2))
 }
 
 export const handleServiceQuantityChange = (

@@ -72,15 +72,17 @@ const invoiceColumns = [
           items={[
             {
               label: 'View Invoice',
-              onClick: () => console.log('View details for invoice:', item.id),
+              onClick: () =>
+                router.visit(getRoutePath('dashboard_invoices_details', { invoiceId: item.id })),
             },
             {
               label: 'Edit Invoice',
-              onClick: () => console.log('Edit invoice:', item.id),
+              onClick: () =>
+                router.visit(getRoutePath('dashboard_invoices_edit', { invoiceId: item.id })),
             },
             {
-              label: 'Mark as Paid/unpaid',
-              onClick: () => console.log('Edit invoice:', item.id),
+              label: `Mark as ${item.status === 'paid' ? 'overdue' : 'paid'}`,
+              onClick: () => router.put(`/invoices/${item.id}/mark-as-paid-or-unpaid`),
             },
             {
               label: 'Resend/remind Invoice',

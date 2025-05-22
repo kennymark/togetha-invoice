@@ -6,7 +6,49 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class CustomersController {
-  async createCustomer({ auth, request, response, logger, session }: HttpContext) {
+  async renderCustomersPage({ auth, request, inertia }: HttpContext) {
+    const {
+      page = 1,
+      perPage = 10,
+      startDate,
+      endDate,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      search,
+    } = await validateQueryParams(request.qs())
+
+    const customers = await Customer.query()
+      .where('user_id', auth.user!.id)
+      .betweenCreatedDates(startDate, endDate)
+      .sortBy(sortBy, sortOrder)
+      .search(search, 'customers')
+      .paginate(page, perPage)
+
+    const totalCustomers = await Customer.query().where('user_id', auth.user!.id).getCount()
+
+    return inertia.render('dashboard/customers/index', {
+      customers: customers,
+      stats: totalCustomers.total,
+    })
+  }
+
+  async renderEditCustomerPage({ params, bouncer, inertia }: HttpContext) {
+    const customer = await Customer.findOrFail(params.customerId)
+    await bouncer.authorize('ownsEntity', customer)
+    return inertia.render('dashboard/customers/edit/index', { customer })
+  }
+
+  async renderCustomerDetailsPage({ params, bouncer, inertia, auth }: HttpContext) {
+    const customer = await Customer.query()
+      .where('id', params.customerId)
+      .where('user_id', auth.user!.id)
+      .firstOrFail()
+    await bouncer.authorize('ownsEntity', customer)
+
+    return inertia.render('dashboard/customers/details', { customer })
+  }
+
+  async create({ auth, request, response, logger, session }: HttpContext) {
     const trx = await db.transaction()
     try {
       const body = await request.validateUsing(createCustomerValidator)
@@ -48,38 +90,6 @@ export default class CustomersController {
     }
   }
 
-  async getAll({ auth, request, inertia }: HttpContext) {
-    const {
-      page = 1,
-      perPage = 10,
-      startDate,
-      endDate,
-      sortBy = 'created_at',
-      sortOrder = 'desc',
-      search,
-    } = await validateQueryParams(request.qs())
-
-    const customers = await Customer.query()
-      .where('user_id', auth.user!.id)
-      .betweenCreatedDates(startDate, endDate)
-      .sortBy(sortBy, sortOrder)
-      .search(search, 'customers')
-      .paginate(page, perPage)
-
-    const totalCustomers = await Customer.query().where('user_id', auth.user!.id).getCount()
-
-    return inertia.render('dashboard/customers/index', {
-      customers: customers,
-      stats: totalCustomers.total,
-    })
-  }
-
-  async getCustomer({ params, bouncer, inertia }: HttpContext) {
-    const customer = await Customer.findOrFail(params.customerId)
-    await bouncer.authorize('ownsEntity', customer)
-    return inertia.render('dashboard/customers/edit/index', { customer })
-  }
-
   async update({ request, params, bouncer, response, session, logger, auth }: HttpContext) {
     const trx = await db.transaction()
     try {
@@ -114,16 +124,6 @@ export default class CustomersController {
       session.flash('error', { message: 'Failed to update customer' })
       return response.redirect().back()
     }
-  }
-
-  async customerDetails({ params, bouncer, inertia, auth }: HttpContext) {
-    const customer = await Customer.query()
-      .where('id', params.customerId)
-      .where('user_id', auth.user!.id)
-      .firstOrFail()
-    await bouncer.authorize('ownsEntity', customer)
-
-    return inertia.render('dashboard/customers/details', { customer })
   }
 
   async delete({ params, bouncer, response, session, logger, auth }: HttpContext) {

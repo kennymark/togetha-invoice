@@ -8,7 +8,61 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
 export default class InvoicesController {
-  async createInvoice({ auth, request, logger, session, response }: HttpContext) {
+  async renderInvoicesPage({ auth, request, inertia }: HttpContext) {
+    const {
+      page = 1,
+      perPage = 10,
+      startDate,
+      endDate,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+    } = await validateQueryParams(request.qs())
+
+    const invoices = await Invoice.query()
+      .where('user_id', auth.user!.id)
+      .betweenCreatedDates(startDate, endDate)
+      .sortBy(sortBy, sortOrder)
+      .preload('customer')
+      .paginate(page, perPage)
+
+    const totalInvoices = await Invoice.query().where('user_id', auth.user!.id).getCount()
+
+    const overdueInvoices = await Invoice.query()
+      .where('user_id', auth.user!.id)
+      .where('due_date', '<', new Date())
+      .where('status', '!=', 'paid')
+      .getCount()
+
+    return inertia.render('dashboard/invoices/index', {
+      invoices,
+      stats: {
+        totalInvoices: totalInvoices.total,
+        overdueInvoices: overdueInvoices.total,
+      },
+    })
+  }
+
+  async renderCreateInvoicePage({ auth, inertia }: HttpContext) {
+    const customers = await Customer.query()
+      .where('user_id', auth.user!.id)
+      .select('id', 'fullName', 'email')
+
+    return inertia.render('dashboard/invoices/create/index', { customers })
+  }
+
+  async renderEditInvoicePage({ auth, inertia, params }: HttpContext) {
+    const invoice = await Invoice.query()
+      .where('user_id', auth.user!.id)
+      .where('id', params.invoiceId)
+      .preload('services')
+      .firstOrFail()
+    const customers = await Customer.query()
+      .where('user_id', auth.user!.id)
+      .select('id', 'fullName', 'email')
+    return inertia.render('dashboard/invoices/edit/index', { invoice, customers })
+  }
+
+  async create({ auth, request, logger, session, response }: HttpContext) {
     const trx = await db.transaction()
     try {
       const { services, ...body } = await request.validateUsing(createInvoiceValidator)
@@ -57,58 +111,14 @@ export default class InvoicesController {
     }
   }
 
-  async getAll({ auth, request, inertia }: HttpContext) {
-    const {
-      page = 1,
-      perPage = 10,
-      startDate,
-      endDate,
-      sortBy = 'created_at',
-      sortOrder = 'desc',
-    } = await validateQueryParams(request.qs())
+  async update({ request, params, bouncer, response, session, logger, auth }: HttpContext) {
+    const trx = await db.transaction()
 
-    const invoices = await Invoice.query()
-      .where('user_id', auth.user!.id)
-      .betweenCreatedDates(startDate, endDate)
-      .sortBy(sortBy, sortOrder)
-      .preload('customer')
-      .paginate(page, perPage)
-
-    const totalInvoices = await Invoice.query().where('user_id', auth.user!.id).getCount()
-
-    const overdueInvoices = await Invoice.query()
-      .where('user_id', auth.user!.id)
-      .where('due_date', '<', new Date())
-      .where('status', '!=', 'paid')
-      .getCount()
-
-    return inertia.render('dashboard/invoices/index', {
-      invoices,
-      stats: {
-        totalInvoices: totalInvoices.total,
-        overdueInvoices: overdueInvoices.total,
-      },
-    })
-  }
-
-  async getById({ params }: HttpContext) {
-    const invoice = await Invoice.findOrFail(params.id)
-    return invoice
-  }
-
-  async getCustomersCreateInvoice({ auth, inertia }: HttpContext) {
-    const customers = await Customer.query()
-      .where('user_id', auth.user!.id)
-      .select('id', 'fullName', 'email')
-
-    return inertia.render('dashboard/invoices/create/index', { customers })
-  }
-
-  async update({ request, params, bouncer, response, session, logger }: HttpContext) {
-    const body = await request.validateUsing(updateInvoiceValidator)
-    const invoice = await Invoice.findOrFail(params.id)
     try {
+      const { services, ...body } = await request.validateUsing(updateInvoiceValidator)
+      const invoice = await Invoice.findOrFail(params.id)
       await bouncer.authorize('ownsEntity', invoice)
+      logger.info(`Updating invoice ${invoice.id}`)
       invoice.merge({
         ...body,
         dueDate: body.dueDate ? new Date(body.dueDate) : undefined,
@@ -119,6 +129,24 @@ export default class InvoicesController {
       })
       await invoice.save()
 
+      for (const service of services) {
+        const existingService = await Service.find(service.id)
+        if (existingService) {
+          logger.info(`Updating service ${service.id}`)
+          await existingService.merge(service).save()
+        }
+      }
+
+      await trx.commit()
+      logger.info(`Invoice updated: ${invoice.id}`)
+
+      await Activity.create({
+        userId: auth.user?.id,
+        type: 'updated',
+        invoiceId: invoice.id,
+        summary: await Activity.generateSummary('updated', invoice),
+      })
+
       session.flash('success', { message: 'Invoice updated successfully' })
       return response.redirect().toPath('/dashboard/invoices')
     } catch (e) {
@@ -127,6 +155,7 @@ export default class InvoicesController {
       return response.redirect().back()
     }
   }
+
   async delete({ params, bouncer, response, session, logger, auth }: HttpContext) {
     const invoice = await Invoice.findOrFail(params.id)
     try {
@@ -147,5 +176,21 @@ export default class InvoicesController {
       session.flash('error', { message: 'Failed to delete invoice' })
       return response.redirect().back()
     }
+  }
+  async markAsPaidOrUnpaid({ params, response, session, logger, auth }: HttpContext) {
+    const invoice = await Invoice.findOrFail(params.id)
+    logger.info(
+      `Marking invoice ${invoice.id} as ${invoice.status === 'paid' ? 'overdue' : 'paid'}`,
+    )
+    invoice.status = invoice.status === 'paid' ? 'overdue' : 'paid'
+    await invoice.save()
+    await Activity.create({
+      userId: auth.user?.id,
+      type: 'updated',
+      invoiceId: invoice.id,
+      summary: `Marked invoice ${invoice.invoiceNumber} as ${invoice.status === 'paid' ? 'overdue' : 'paid'}`,
+    })
+    session.flash('success', { message: 'Invoice marked as paid' })
+    return response.redirect().toPath('/dashboard/invoices')
   }
 }

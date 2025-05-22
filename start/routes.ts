@@ -33,30 +33,36 @@ router.get('/auth/create-account', ({ inertia }) => inertia.render('auth/create-
 router.get('/forgot-password', ({ inertia }) => inertia.render('auth/forgot-password'))
 router.get('/reset-password', ({ inertia }) => inertia.render('auth/reset-password'))
 
+router.get('/errors/not-found', ({ inertia }) => inertia.render('errors/not-found/index'))
+
 // Dashboard pages
 router
   .group(() => {
     router.get('/', [UsersController, 'dashboard'])
 
-    router.get('/customers', [CustomersController, 'getAll'])
+    router.get('/customers', [CustomersController, 'renderCustomersPage'])
     router.get('/customers/create', ({ inertia }) =>
       inertia.render('dashboard/customers/create/index'),
     )
-    router.get('/customers/:customerId', [CustomersController, 'customerDetails'])
-    router.get('/customers/:customerId/edit', [CustomersController, 'getCustomer'])
+    router.get('/customers/:customerId', [CustomersController, 'renderCustomerDetailsPage'])
+    router.get('/customers/:customerId/edit', [CustomersController, 'renderEditCustomerPage'])
 
-    router.get('/jobs', [JobsController, 'getAll'])
-    router.get('/jobs/create', [JobsController, 'getCustomersCreateJob'])
-    router.get('/jobs/:jobId/edit', [JobsController, 'editJob'])
-    router.get('/jobs/:jobId', [JobsController, 'jobDetails'])
+    router.get('/jobs', [JobsController, 'renderJobsPage'])
+    router.get('/jobs/create', [JobsController, 'renderCreateJobPage'])
+    router.get('/jobs/:jobId/edit', [JobsController, 'renderEditJobPage'])
+    router.get('/jobs/:jobId', [JobsController, 'renderJobDetailsPage'])
 
-    router.get('/invoices', [InvoicesController, 'getAll'])
-    router.get('/invoices/create', [InvoicesController, 'getCustomersCreateInvoice'])
+    router.get('/invoices', [InvoicesController, 'renderInvoicesPage'])
+    router.get('/invoices/create', [InvoicesController, 'renderCreateInvoicePage'])
+    router.get('/invoices/:invoiceId/edit', [InvoicesController, 'renderEditInvoicePage'])
+
     router.get('/payments', ({ inertia }) => inertia.render('dashboard/payments/index'))
     router.get('/payments/create', ({ inertia }) =>
       inertia.render('dashboard/payments/create/index'),
     )
+
     router.get('/finance', ({ inertia }) => inertia.render('dashboard/finance/index'))
+
     router.get('/settings', [UsersController, 'settings'])
   })
   .prefix('/dashboard')
@@ -81,7 +87,7 @@ router
       .prefix('/users')
     router
       .group(() => {
-        router.post('/', [CustomersController, 'createCustomer'])
+        router.post('/', [CustomersController, 'create'])
         router.put('/:id', [CustomersController, 'update'])
         router.delete('/:id', [CustomersController, 'delete'])
       })
@@ -89,7 +95,7 @@ router
 
     router
       .group(() => {
-        router.post('/', [JobsController, 'createJob'])
+        router.post('/', [JobsController, 'create'])
         router.put('/:id', [JobsController, 'update'])
         router.delete('/:id', [JobsController, 'delete'])
       })
@@ -106,9 +112,10 @@ router
 
     router
       .group(() => {
-        router.post('/', [InvoicesController, 'createInvoice'])
+        router.post('/', [InvoicesController, 'create'])
         router.put('/:id', [InvoicesController, 'update'])
         router.delete('/:id', [InvoicesController, 'delete'])
+        router.put('/:id/mark-as-paid-or-unpaid', [InvoicesController, 'markAsPaidOrUnpaid'])
       })
       .prefix('/invoices')
 

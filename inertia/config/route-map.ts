@@ -14,20 +14,29 @@ export const ROUTE_PATHS = {
   about: '/about',
   auth_create_account: '/auth/create-account',
   auth_login: '/auth/login',
+
   dashboard: '/dashboard',
+
   dashboard_customers: '/dashboard/customers',
   dashboard_customers_create: '/dashboard/customers/create',
   dashboard_customers_edit: '/dashboard/customers/:customerId/edit',
   dashboard_customers_details: '/dashboard/customers/:customerId',
+
   dashboard_jobs: '/dashboard/jobs',
   dashboard_jobs_create: '/dashboard/jobs/create',
   dashboard_jobs_edit: '/dashboard/jobs/:jobId/edit',
   dashboard_jobs_details: '/dashboard/jobs/:jobId',
+
   dashboard_invoices: '/dashboard/invoices',
   dashboard_invoices_create: '/dashboard/invoices/create',
+  dashboard_invoices_edit: '/dashboard/invoices/:invoiceId/edit',
+  dashboard_invoices_details: '/dashboard/invoices/:invoiceId',
+
   dashboard_payments: '/dashboard/payments',
   dashboard_payments_create: '/dashboard/payments/create',
+
   dashboard_finance: '/dashboard/finance',
+
   dashboard_settings: '/dashboard/settings',
 
   not_found: '*',
@@ -58,19 +67,27 @@ export interface RouteParams {
   about: never
   auth_create_account: never
   auth_login: never
+
   dashboard: never
+
   dashboard_customers: never
   dashboard_customers_create: never
   dashboard_customers_edit: { customerId: string }
   dashboard_customers_details: { customerId: string }
+
   dashboard_jobs: never
   dashboard_jobs_create: never
   dashboard_jobs_edit: { jobId: string }
   dashboard_jobs_details: { jobId: string }
+
   dashboard_invoices: never
   dashboard_invoices_create: never
+  dashboard_invoices_edit: { invoiceId: string }
+  dashboard_invoices_details: { invoiceId: string }
+
   dashboard_payments: never
   dashboard_payments_create: never
+
   dashboard_finance: never
   dashboard_settings: never
   not_found: never

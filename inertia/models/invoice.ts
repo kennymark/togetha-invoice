@@ -21,7 +21,7 @@ export interface SingleInvoice {
   isRecurringFrequency: string
   isDiscounted: boolean
   isDiscountedType: string
-  isDiscountedValue: number
+  isDiscountedValue: string
   dueDate: string
   createdAt: string
   updatedAt: string
@@ -42,9 +42,9 @@ export interface SingleService {
   id: string
   name: string
   description: string
-  quantity: number
-  unitPrice: number
-  totalPrice: number
+  quantity: string
+  unitPrice: string
+  totalPrice: string
 }
 
 export interface Services {

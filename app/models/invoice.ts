@@ -34,7 +34,7 @@ export default class Invoice extends BaseModel {
 
   @belongsTo(() => User) declare user: BelongsTo<typeof User>
 
-  @hasMany(() => Service) declare properties: HasMany<typeof Service>
+  @hasMany(() => Service) declare services: HasMany<typeof Service>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

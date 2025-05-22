@@ -42,8 +42,18 @@ export const updateInvoiceValidator = vine.compile(
     isRecurringEndDate: vine.string().optional(),
     isRecurringFrequency: vine.string().optional(),
     isDiscounted: vine.boolean().optional(),
-    isDiscountedAmount: vine.number().optional(),
-    isDiscountedPercentage: vine.number().optional(),
+    isDiscountedType: vine.enum(['amount', 'percentage']).optional(),
+    isDiscountedValue: vine.number().optional(),
     notes: vine.string().optional(),
+    services: vine.array(
+      vine.object({
+        id: vine.string(),
+        name: vine.string(),
+        description: vine.string(),
+        quantity: vine.number(),
+        unitPrice: vine.number(),
+        totalPrice: vine.number(),
+      }),
+    ),
   }),
 )

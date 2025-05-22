@@ -17,6 +17,7 @@ export const invoiceFormSchema = z.object({
   services: z
     .array(
       z.object({
+        id: z.string().optional(),
         name: z.string().min(1, 'Item name is required'),
         description: z.string().min(1, 'Item description is required'),
         quantity: z.number().min(1, 'Quantity must be at least 1'),
