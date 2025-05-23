@@ -86,7 +86,7 @@ export default class JobsController {
           userId: auth.user?.id,
           type: 'created',
           jobId: job.id,
-          summary: await Activity.generateSummary('created', job),
+          summary: await Activity.generateSummary('created', job, 'job'),
         },
         { client: trx },
       )
@@ -129,7 +129,7 @@ export default class JobsController {
           userId: auth.user?.id,
           type: 'updated',
           jobId: job.id,
-          summary: await Activity.generateSummary('updated', job),
+          summary: await Activity.generateSummary('updated', job, 'job'),
         },
         { client: trx },
       )
@@ -159,7 +159,7 @@ export default class JobsController {
         userId: auth.user?.id,
         type: 'deleted',
         jobId: job.id,
-        summary: await Activity.generateSummary('deleted', job),
+        summary: await Activity.generateSummary('deleted', job, 'job'),
       })
 
       session.flash('success', { message: 'Job deleted successfully' })

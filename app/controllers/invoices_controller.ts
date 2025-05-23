@@ -64,6 +64,19 @@ export default class InvoicesController {
     return inertia.render('dashboard/invoices/edit/index', { invoice, customers })
   }
 
+  async renderInvoiceDetailsPage({ auth, inertia, params }: HttpContext) {
+    const invoice = await Invoice.query()
+      .where('user_id', auth.user!.id)
+      .where('id', params.invoiceId)
+      .preload('services')
+      .preload('customer', (query) =>
+        query.select('fullName', 'email', 'businessName', 'businessAddress'),
+      )
+      .firstOrFail()
+
+    return inertia.render('dashboard/invoices/details/index', { invoice })
+  }
+
   async create({ auth, request, logger, session, response }: HttpContext) {
     const trx = await db.transaction()
     try {
@@ -89,7 +102,7 @@ export default class InvoicesController {
           userId: auth.user?.id,
           type: 'created',
           invoiceId: invoice.id,
-          summary: await Activity.generateSummary('created', invoice),
+          summary: await Activity.generateSummary('created', invoice, 'invoice'),
         },
         { client: trx },
       )
@@ -169,7 +182,7 @@ export default class InvoicesController {
         userId: auth.user?.id,
         type: 'updated',
         invoiceId: invoice.id,
-        summary: await Activity.generateSummary('updated', invoice),
+        summary: await Activity.generateSummary('updated', invoice, 'invoice'),
       })
 
       session.flash('success', { message: 'Invoice updated successfully' })
@@ -191,7 +204,7 @@ export default class InvoicesController {
         userId: auth.user?.id,
         type: 'deleted',
         invoiceId: invoice.id,
-        summary: await Activity.generateSummary('deleted', invoice),
+        summary: await Activity.generateSummary('deleted', invoice, 'invoice'),
       })
 
       session.flash('success', { message: 'Invoice deleted successfully' })
@@ -217,5 +230,25 @@ export default class InvoicesController {
     })
     session.flash('success', { message: 'Invoice marked as paid' })
     return response.redirect().toPath('/dashboard/invoices')
+  }
+
+  async renderInvoicePaymentPage({ auth, inertia, params }: HttpContext) {
+    const invoice = await Invoice.query()
+      .where('id', params.invoiceId)
+      .preload('services')
+      .firstOrFail()
+
+    // Mark invoice as paid
+    invoice.status = 'paid'
+    await invoice.save()
+
+    await Activity.create({
+      userId: auth.user?.id,
+      type: 'updated',
+      invoiceId: invoice.id,
+      summary: `Invoice ${invoice.invoiceNumber} marked as paid via payment page`,
+    })
+
+    return inertia.render('dashboard/invoices/pay/index', { invoice })
   }
 }

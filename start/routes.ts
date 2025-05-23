@@ -55,6 +55,8 @@ router
     router.get('/invoices', [InvoicesController, 'renderInvoicesPage'])
     router.get('/invoices/create', [InvoicesController, 'renderCreateInvoicePage'])
     router.get('/invoices/:invoiceId/edit', [InvoicesController, 'renderEditInvoicePage'])
+    router.get('/invoices/:invoiceId', [InvoicesController, 'renderInvoiceDetailsPage'])
+    router.get('/invoices/:invoiceId/pay', [InvoicesController, 'renderInvoicePaymentPage'])
 
     router.get('/payments', ({ inertia }) => inertia.render('dashboard/payments/index'))
     router.get('/payments/create', ({ inertia }) =>

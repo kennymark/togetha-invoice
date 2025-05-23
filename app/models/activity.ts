@@ -25,6 +25,8 @@ const activityTypes = [
 
 export type ActivityType = (typeof activityTypes)[number]
 
+export type EntityType = 'customer' | 'job' | 'invoice'
+
 export default class Activity extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
@@ -47,47 +49,42 @@ export default class Activity extends BaseModel {
   declare updatedAt: DateTime
 
   static async generateSummary(
-    type: ActivityType,
+    activityType: ActivityType,
     entity: { id: string; name?: string; title?: string; fullName?: string; isUser?: boolean },
+    entityType: EntityType,
   ) {
     const entityName = entity.name || entity.title || entity.fullName || 'Unknown'
 
     // Check if this is a user activity first
     if (entity.isUser) {
-      if (type === 'passwordUpdated') {
+      if (activityType === 'passwordUpdated') {
         return 'You updated your password'
       }
-      if (type === 'updated') {
+      if (activityType === 'updated') {
         return 'You updated your account details'
       }
     }
 
-    const entityType = entity.fullName
-      ? 'Customer'
-      : entity.title
-        ? 'Job'
-        : entity.name
-          ? 'Invoice'
-          : 'Unknown'
+    const entityTypeDisplay = entityType.charAt(0).toUpperCase() + entityType.slice(1)
 
     const summaries: Record<ActivityType, string> = {
-      created: `${entityType} "${entityName}" has been created`,
-      deleted: `${entityType} "${entityName}" has been deleted`,
-      updated: `${entityType} "${entityName}" has been updated`,
-      passwordUpdated: `Password for ${entityType} "${entityName}" has been updated`,
-      other: `${entityType} "${entityName}" has been modified`,
-      accepted: `${entityType} "${entityName}" has been accepted`,
-      rejected: `${entityType} "${entityName}" has been rejected`,
-      renewed: `${entityType} "${entityName}" has been renewed`,
-      archived: `${entityType} "${entityName}" has been archived`,
-      uploaded: `${entityType} "${entityName}" has been uploaded`,
-      completed: `${entityType} "${entityName}" has been completed`,
-      commented: `A comment has been added to ${entityType} "${entityName}"`,
-      paid: `${entityType} "${entityName}" has been marked as paid`,
-      verified: `${entityType} "${entityName}" has been verified`,
-      approved: `${entityType} "${entityName}" has been approved`,
+      created: `${entityTypeDisplay} "${entityName}" has been created`,
+      deleted: `${entityTypeDisplay} "${entityName}" has been deleted`,
+      updated: `${entityTypeDisplay} "${entityName}" has been updated`,
+      passwordUpdated: `Password for ${entityTypeDisplay} "${entityName}" has been updated`,
+      other: `${entityTypeDisplay} "${entityName}" has been modified`,
+      accepted: `${entityTypeDisplay} "${entityName}" has been accepted`,
+      rejected: `${entityTypeDisplay} "${entityName}" has been rejected`,
+      renewed: `${entityTypeDisplay} "${entityName}" has been renewed`,
+      archived: `${entityTypeDisplay} "${entityName}" has been archived`,
+      uploaded: `${entityTypeDisplay} "${entityName}" has been uploaded`,
+      completed: `${entityTypeDisplay} "${entityName}" has been completed`,
+      commented: `A comment has been added to ${entityTypeDisplay} "${entityName}"`,
+      paid: `${entityTypeDisplay} "${entityName}" has been marked as paid`,
+      verified: `${entityTypeDisplay} "${entityName}" has been verified`,
+      approved: `${entityTypeDisplay} "${entityName}" has been approved`,
     }
 
-    return summaries[type]
+    return summaries[activityType]
   }
 }

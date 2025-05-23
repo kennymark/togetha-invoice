@@ -1,5 +1,4 @@
-import EmailLayout from '#emails/layout'
-import { Button, Section, Text } from '@react-email/components'
+import { EmailButton, EmailSection, EmailText, EmailWrapper } from '#emails/layout/layout'
 
 interface ResetRequestEmailProps {
   resetUrl: string
@@ -8,21 +7,21 @@ interface ResetRequestEmailProps {
 
 export default function ResetRequestEmail({ resetUrl, user }: ResetRequestEmailProps) {
   return (
-    <EmailLayout preview='Password reset request for your Togetha account'>
-      <Section>
-        <Text>Hello {user.fullName || 'User'},</Text>
-        <Text>You requested a password reset. Click the button below to reset your password:</Text>
-        <Button href={resetUrl} className='bg-brand text-white px-4 py-2 rounded-md'>
-          Reset Password
-        </Button>
-        <Text>If you did not request this, you can ignore this email.</Text>
-        <Text>
+    <EmailWrapper preview='Password reset request for your Togetha account'>
+      <EmailSection>
+        <EmailText>Hello {user.fullName || 'User'},</EmailText>
+        <EmailText>
+          You requested a password reset. Click the button below to reset your password:
+        </EmailText>
+        <EmailButton href={resetUrl}>Reset Password</EmailButton>
+        <EmailText>If you did not request this, you can ignore this email.</EmailText>
+        <EmailText>
           Thanks,
           <br />
           The Togetha Team
-        </Text>
-      </Section>
-    </EmailLayout>
+        </EmailText>
+      </EmailSection>
+    </EmailWrapper>
   )
 }
 

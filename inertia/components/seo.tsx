@@ -18,9 +18,9 @@ interface SEOProps {
 export function SEO({
   title,
   description,
-  keywords = 'template, react, typescript, nextjs, web development, modern web app',
-  ogImage = '/assets/landing-page/logo.png',
-  ogUrl = 'https://your-domain.com',
+  keywords = 'invoice, invoicing, invoicing software, invoice generator, invoice creator, invoice maker, invoice template, invoice design, invoice generator, invoice creator, invoice maker, invoice template, invoice design',
+  ogImage = '/android-chrome-192x192.png',
+  ogUrl = 'https://togetha-invoice-production.up.railway.app/',
   ogType = 'website',
   twitterCard = 'summary_large_image',
   canonicalUrl,
@@ -30,7 +30,7 @@ export function SEO({
   alternateLanguages,
 }: SEOProps) {
   try {
-    const fullTitle = `${title} | Your Company Name`
+    const fullTitle = `${title} | Togetha Invoice`
     const robots = `${noindex ? 'noindex' : 'index'},${nofollow ? 'nofollow' : 'follow'}`
 
     return (

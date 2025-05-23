@@ -66,7 +66,7 @@ export default class CustomersController {
           userId: auth.user?.id,
           type: 'created',
           customerId: customer.id,
-          summary: await Activity.generateSummary('created', customer),
+          summary: await Activity.generateSummary('created', customer, 'customer'),
         },
         { client: trx },
       )
@@ -106,7 +106,7 @@ export default class CustomersController {
           userId: auth.user?.id,
           type: 'updated',
           customerId: customer.id,
-          summary: await Activity.generateSummary('updated', customer),
+          summary: await Activity.generateSummary('updated', customer, 'customer'),
         },
         { client: trx },
       )
@@ -136,7 +136,7 @@ export default class CustomersController {
         userId: auth.user?.id,
         type: 'deleted',
         customerId: customer.id,
-        summary: await Activity.generateSummary('deleted', customer),
+        summary: await Activity.generateSummary('deleted', customer, 'customer'),
       })
       session.flash('success', { message: 'Customer deleted successfully' })
       return response.redirect().toPath('/dashboard/customers')

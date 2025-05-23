@@ -1,7 +1,7 @@
 import InvoiceEmail from '#emails/invoice'
 import ResetRequestEmail from '#emails/reset_request'
 import ResetSuccessEmail from '#emails/reset_success'
-import SignupSuccessEmail from '#emails/signup-success'
+import SignupSuccessEmail from '#emails/signup_success'
 import env from '#start/env'
 import logger from '@adonisjs/core/services/logger'
 import type { Emails } from '@adonisjs/core/types'

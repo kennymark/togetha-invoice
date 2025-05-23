@@ -1,5 +1,12 @@
-import EmailLayout from '#emails/layout'
-import { Button, Heading, Text } from '@react-email/components'
+import {
+  EmailButton,
+  EmailHeading,
+  EmailSection,
+  EmailText,
+  EmailWrapper,
+} from '#emails/layout/layout'
+import { EmailTable } from '#emails/layout/custom-components'
+import { formatCurrency, formatDate } from '#emails/layout/globals'
 
 interface InvoiceEmailProps {
   recipientName: string
@@ -32,80 +39,57 @@ export default function InvoiceEmail({
   companyAddress,
 }: InvoiceEmailProps) {
   return (
-    <EmailLayout preview={`Invoice #${invoiceNumber} from ${companyName}`}>
-      <Heading style={{ color: '#007291', marginBottom: '24px' }}>Invoice #{invoiceNumber}</Heading>
+    <EmailWrapper preview={`Invoice #${invoiceNumber} from ${companyName}`}>
+      <EmailHeading>Invoice #{invoiceNumber}</EmailHeading>
 
-      <Text style={{ marginBottom: '16px' }}>Dear {recipientName},</Text>
+      <EmailText>Dear {recipientName},</EmailText>
 
-      <Text style={{ marginBottom: '24px' }}>
+      <EmailText>
         Please find attached the invoice for your recent transaction. The payment is due by{' '}
-        {dueDate}.
-      </Text>
+        {formatDate(dueDate)}.
+      </EmailText>
 
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ marginBottom: '16px' }}>
-          <Text style={{ marginBottom: '8px', fontWeight: 'bold' }}>From:</Text>
-          <Text style={{ marginBottom: '4px' }}>{companyName}</Text>
-          <Text style={{ marginBottom: '16px' }}>{companyAddress}</Text>
-        </div>
-        <div>
-          <Text style={{ marginBottom: '8px', fontWeight: 'bold' }}>Invoice Details:</Text>
-          <Text style={{ marginBottom: '4px' }}>Date: {invoiceDate}</Text>
-          <Text style={{ marginBottom: '4px' }}>Due Date: {dueDate}</Text>
-          <Text style={{ marginBottom: '4px' }}>Invoice #: {invoiceNumber}</Text>
-        </div>
-      </div>
+      <EmailSection>
+        <EmailText bold>From:</EmailText>
+        <EmailText compact>{companyName}</EmailText>
+        <EmailText compact>{companyAddress}</EmailText>
+      </EmailSection>
+      <EmailSection>
+        <EmailText bold>Invoice Details:</EmailText>
+        <EmailText compact>Date: {formatDate(invoiceDate)}</EmailText>
+        <EmailText compact>Due Date: {formatDate(dueDate)}</EmailText>
+        <EmailText compact>Invoice #: {invoiceNumber}</EmailText>
+      </EmailSection>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #eee' }}>
-            <th style={{ textAlign: 'left', padding: '8px 0', fontWeight: 'bold' }}>Description</th>
-            <th style={{ textAlign: 'right', padding: '8px 0', fontWeight: 'bold' }}>Quantity</th>
-            <th style={{ textAlign: 'right', padding: '8px 0', fontWeight: 'bold' }}>Unit Price</th>
-            <th style={{ textAlign: 'right', padding: '8px 0', fontWeight: 'bold' }}>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr
-              key={`${item.description}-${item.amount}`}
-              style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '8px 0' }}>{item.description}</td>
-              <td style={{ textAlign: 'right', padding: '8px 0' }}>{item.quantity}</td>
-              <td style={{ textAlign: 'right', padding: '8px 0' }}>{item.unitPrice}</td>
-              <td style={{ textAlign: 'right', padding: '8px 0' }}>{item.amount}</td>
-            </tr>
-          ))}
-          <tr>
-            <td
-              colSpan={3}
-              style={{ textAlign: 'right', padding: '16px 8px 0 0', fontWeight: 'bold' }}>
-              Total:
-            </td>
-            <td style={{ textAlign: 'right', padding: '16px 0 0 0', fontWeight: 'bold' }}>
-              {currency} {amount}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <EmailTable
+        columns={[
+          { header: 'Description', key: 'description', width: '45%' },
+          { header: 'Quantity', key: 'quantity', width: '15%' },
+          { header: 'Unit Price', key: 'unitPrice', width: '20%' },
+          { header: 'Amount', key: 'amount', width: '20%' },
+        ]}
+        data={[
+          ...items.map((item) => ({
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: formatCurrency(item.unitPrice, currency),
+            amount: formatCurrency(item.amount, currency),
+          })),
+          {
+            description: 'Total:',
+            quantity: '',
+            unitPrice: '',
+            amount: formatCurrency(amount, currency),
+          },
+        ]}
+        style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}
+      />
 
-      <Button
-        href={paymentUrl}
-        style={{
-          background: '#007291',
-          color: '#fff',
-          padding: '12px 24px',
-          borderRadius: '6px',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px',
-        }}>
-        Pay Now
-      </Button>
+      <EmailButton href={paymentUrl}>Pay Now</EmailButton>
 
-      <Text style={{ fontSize: '14px', color: '#666' }}>
+      <EmailText>
         If you have any questions about this invoice, please don't hesitate to contact us.
-      </Text>
-    </EmailLayout>
+      </EmailText>
+    </EmailWrapper>
   )
 }
