@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker'
-import { Button } from '~/components/ui'
-import { showDevFeatures } from '~/lib/utils'
-import type { CustomerFormValues } from '~/lib/schemas/customer'
 import type { UseFormReset } from 'react-hook-form'
-import type { JobFormValues } from '~/lib/schemas/jobs'
+import { Button } from '~/components/ui'
+import type { CustomerFormValues } from '~/lib/schemas/customer'
 import type { InvoiceFormValues } from '~/lib/schemas/invoice'
+import type { JobFormValues } from '~/lib/schemas/jobs'
+import { showDevFeatures } from '~/lib/utils'
 
 /**
  * Generates a phone number in E.164 format for supported countries
@@ -152,7 +152,7 @@ export function FakeDataGenerator<T extends FakeDataType>({
   variant = 'outline',
   onAfterGenerate,
 }: FakeDataGeneratorProps<T>) {
-  if (!showDevFeatures()) return null
+  //if (!showDevFeatures()) return null
 
   const handleClick = () => {
     const fakeData = fakeDataGenerators[type]()
