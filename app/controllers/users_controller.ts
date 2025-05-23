@@ -21,9 +21,17 @@ export default class UsersController {
   async create({ request, response, logger, session }: HttpContext) {
     try {
       const body = await request.validateUsing(createUserValidator)
-      const findUser = await User.query().where('email', body.email).first()
+      const [existingUser, existingPhone] = await Promise.all([
+        User.query().where('email', body.email).first(),
+        User.query().where('contactNumber', body.contactNumber).first(),
+      ])
 
-      if (findUser) {
+      if (existingPhone) {
+        session.flash('error', { message: 'Phone number already associated with another account' })
+        return response.redirect().back()
+      }
+
+      if (existingUser) {
         session.flash('error', { message: 'User already exists' })
         return response.redirect().back()
       }
@@ -31,6 +39,14 @@ export default class UsersController {
       await User.create(body)
       logger.info('User created', { email: body.email })
 
+      await EmailService.send('signup-success', {
+        email: body.email,
+        subject: 'Welcome to Togetha Invoice!',
+        loginUrl: `${env.get('APP_URL')}/auth/login`,
+        user: {
+          fullName: body.fullName,
+        },
+      })
       session.flash('success', { message: 'Account created successfully! Please log in.' })
       return response.redirect().toPath('/auth/login')
     } catch (error) {
