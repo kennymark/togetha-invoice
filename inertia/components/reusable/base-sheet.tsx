@@ -135,7 +135,7 @@ export default function BaseSheet({
         )}>
         {hasNav && <SheetNav>{navChildren}</SheetNav>}
 
-        <SheetHeader className='w-full flex flex-col items-center justify-center font-input-mono sr-only'>
+        <SheetHeader className='w-full flex flex-col items-center justify-center sr-only'>
           <SheetTitle className='text-2xl'>{title}</SheetTitle>
           <SheetDescription className='text-lg'>{description}</SheetDescription>
         </SheetHeader>

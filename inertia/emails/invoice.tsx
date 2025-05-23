@@ -49,17 +49,19 @@ export default function InvoiceEmail({
         {formatDate(dueDate)}.
       </EmailText>
 
-      <EmailSection>
-        <EmailText bold>From:</EmailText>
-        <EmailText compact>{companyName}</EmailText>
-        <EmailText compact>{companyAddress}</EmailText>
-      </EmailSection>
-      <EmailSection>
-        <EmailText bold>Invoice Details:</EmailText>
-        <EmailText compact>Date: {formatDate(invoiceDate)}</EmailText>
-        <EmailText compact>Due Date: {formatDate(dueDate)}</EmailText>
-        <EmailText compact>Invoice #: {invoiceNumber}</EmailText>
-      </EmailSection>
+      <div style={{ display: 'flex', gap: '24px', justifyContent: 'space-between' }}>
+        <EmailSection>
+          <EmailText bold>From:</EmailText>
+          <EmailText compact>{companyName}</EmailText>
+          <EmailText compact>{companyAddress}</EmailText>
+        </EmailSection>
+        <EmailSection>
+          <EmailText bold>Invoice Details:</EmailText>
+          <EmailText compact>Date: {formatDate(invoiceDate)}</EmailText>
+          <EmailText compact>Due Date: {formatDate(dueDate)}</EmailText>
+          <EmailText compact>Invoice #: {invoiceNumber}</EmailText>
+        </EmailSection>
+      </div>
 
       <EmailTable
         columns={[

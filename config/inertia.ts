@@ -1,3 +1,4 @@
+import CacheService from '#services/cache_service'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -26,6 +27,10 @@ const inertiaConfig = defineConfig({
       createdAt: ctx.auth.user?.createdAt,
       updatedAt: ctx.auth.user?.updatedAt,
     }),
+    devEmails: async () => {
+      const emails = await CacheService.get('emails', [])
+      return emails
+    },
   },
 
   /**
@@ -40,5 +45,14 @@ const inertiaConfig = defineConfig({
 export default inertiaConfig
 
 declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
+  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {
+    devEmails: Array<{
+      id: string
+      subject: string
+      from: string
+      to: string[]
+      url: string
+      date: string
+    }>
+  }
 }

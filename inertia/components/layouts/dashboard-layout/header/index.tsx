@@ -6,6 +6,7 @@ import usePageProps from '~/hooks/use-page-props'
 import { router } from '@inertiajs/react'
 import FlashMessages from '~/components/flash-messages'
 import { useSidebar } from '~/components/ui/sidebar'
+import DevEmails from '~/components/dev-emails'
 
 interface QuickAction {
   label: string
@@ -35,6 +36,7 @@ const quickActions: QuickAction[] = [
 
 export default function Header() {
   const { user } = usePageProps()
+
   const { toggleSidebar } = useSidebar()
   return (
     <>
@@ -57,6 +59,7 @@ export default function Header() {
               align='end'
               side='bottom'
             />
+            <DevEmails />
             <BasePopover
               trigger={
                 <Button

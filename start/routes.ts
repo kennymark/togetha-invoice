@@ -18,6 +18,7 @@ const PaymentsController = () => import('#controllers/payments_controller')
 const InvoicesController = () => import('#controllers/invoices_controller')
 const UsersController = () => import('#controllers/users_controller')
 const ReportsController = () => import('#controllers/reports_controller')
+const DevEmailsController = () => import('#controllers/dev_emails_controller')
 
 // Handle Chrome DevTools request
 router.get('/.well-known/appspecific/com.chrome.devtools.json', ({ response }) => {
@@ -131,6 +132,7 @@ router
       .prefix('/reports')
 
     router.get('/health', [HealthChecksController])
+    router.get('/dev-emails', [DevEmailsController, 'index'])
   })
   .middleware(middleware.auth())
 

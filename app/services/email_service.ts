@@ -64,7 +64,6 @@ class EmailService {
 }
 
 EmailService.on('invoice-created', async (message, data: Emails['invoice-created']) => {
-  console.log('data', data)
   const { email, subject, invoice } = data
   const html = await render(InvoiceEmail({ ...invoice }))
   message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
@@ -84,7 +83,6 @@ EmailService.on('reset-password', async (message, data: Emails['reset-password']
 
 EmailService.on('forgot-password', async (message, data: Emails['forgot-password']) => {
   const { email, subject, resetUrl, user } = data
-  console.log('data', data)
   const html = await render(ResetRequestEmail({ resetUrl, user }))
   message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
 })
