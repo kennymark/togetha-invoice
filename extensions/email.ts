@@ -27,9 +27,32 @@ declare module '@adonisjs/core/types' {
     'signup-success': {
       subject: string
       email: string
-      link: string
+      loginUrl: string
       user: {
         fullName: string
+      }
+    }
+
+    'invoice-created': {
+      subject: string
+      email: string
+      invoice: {
+        recipientName: string
+        invoiceNumber: string
+        invoiceDate: string
+        dueDate: string
+        amount: string
+        currency: string
+        paymentUrl: string
+        createdAt: string
+        items: Array<{
+          description: string
+          quantity: number
+          unitPrice: string
+          amount: string
+        }>
+        companyName: string
+        companyAddress: string
       }
     }
   }

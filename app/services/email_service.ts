@@ -1,5 +1,7 @@
+import InvoiceEmail from '#emails/invoice'
 import ResetRequestEmail from '#emails/reset_request'
 import ResetSuccessEmail from '#emails/reset_success'
+import SignupSuccessEmail from '#emails/signup-success'
 import env from '#start/env'
 import logger from '@adonisjs/core/services/logger'
 import type { Emails } from '@adonisjs/core/types'
@@ -61,6 +63,19 @@ class EmailService {
   }
 }
 
+EmailService.on('invoice-created', async (message, data: Emails['invoice-created']) => {
+  console.log('data', data)
+  const { email, subject, invoice } = data
+  const html = await render(InvoiceEmail({ ...invoice }))
+  message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
+})
+
+EmailService.on('signup-success', async (message, data: Emails['signup-success']) => {
+  const { email, subject, loginUrl, user } = data
+  const html = await render(SignupSuccessEmail({ loginUrl, user }))
+  message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
+})
+
 EmailService.on('reset-password', async (message, data: Emails['reset-password']) => {
   const { email, subject, user } = data
   const html = await render(ResetSuccessEmail({ user }))
@@ -82,34 +97,5 @@ EmailService.on('simple-send', async (message, data: Emails['simple-send']) => {
   message.replyTo(replyTo || '')
   message.html(html)
 })
-
-// EmailService.on('signup-success', async (message, data: Emails['signup-success']) => {
-//   const { subject, email, link, user } = data
-
-//   if (!email) {
-//     logger.error('No recipient email provided for signup success email')
-//     throw new Error('No recipient email provided')
-//   }
-
-//   try {
-//     let html: string
-
-//     // message.subject(subject).from(NO_REPLY_EMAIL).to(email).html(html)
-
-//     // Debug logging
-//     logger.debug('Sending signup success email', {
-//       to: email,
-//       from: NO_REPLY_EMAIL,
-//       subject,
-//     })
-//   } catch (error) {
-//     logger.error('Failed to send signup success email', {
-//       error,
-//       email,
-//       subject,
-//     })
-//     throw error
-//   }
-// })
 
 export default EmailService
