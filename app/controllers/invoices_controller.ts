@@ -2,6 +2,8 @@ import Activity from '#models/activity'
 import Customer from '#models/customer'
 import Invoice from '#models/invoice'
 import Service from '#models/service'
+import EmailService from '#services/email_service'
+import env from '#start/env'
 import { validateQueryParams } from '#utils/vine'
 import { createInvoiceValidator, updateInvoiceValidator } from '#validators/invoice_validator'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -66,6 +68,7 @@ export default class InvoicesController {
     const trx = await db.transaction()
     try {
       const { services, ...body } = await request.validateUsing(createInvoiceValidator)
+      const customer = await Customer.findOrFail(body.customerId)
       const invoice = await Invoice.create(
         {
           ...body,
@@ -93,6 +96,28 @@ export default class InvoicesController {
 
       await trx.commit()
       logger.info(`Invoice created: ${body.title}`)
+      await EmailService.send('invoice-created', {
+        email: customer.email,
+        subject: `Invoice ${invoice.invoiceNumber} created`,
+        invoice: {
+          recipientName: customer.fullName,
+          invoiceNumber: invoice.invoiceNumber,
+          invoiceDate: invoice.createdAt.toFormat('dd MMM yyyy'),
+          dueDate: invoice.dueDate.toString(),
+          amount: invoice.amount.toString(),
+          currency: invoice.currency,
+          paymentUrl: `${env.get('APP_URL')}/dashboard/invoices/${invoice.id}/pay`,
+          items: services.map((service) => ({
+            description: service.description,
+            quantity: service.quantity,
+            unitPrice: service.unitPrice.toString(),
+            amount: service.totalPrice.toString(),
+          })),
+          companyName: customer.businessName,
+          companyAddress: customer.businessAddress,
+          createdAt: invoice.createdAt.toFormat('dd MMM yyyy'),
+        },
+      })
       session.flash('success', { message: 'Invoice created successfully' })
       return response.redirect().toPath('/dashboard/invoices')
     } catch (e) {
