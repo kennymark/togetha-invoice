@@ -65,7 +65,7 @@ export default function DevEmails() {
                 variant='ghost'
                 size='sm'
                 className='gap-2'
-                onClick={() => window.open(email.url, '_blank')}>
+                onClick={() => window.open(email.url.replace(/\]$/, ''), '_blank')}>
                 <ExternalLink className='size-4' />
                 View
               </Button>

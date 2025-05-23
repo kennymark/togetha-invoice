@@ -49,7 +49,13 @@ export default function InvoiceEmail({
         {formatDate(dueDate)}.
       </EmailText>
 
-      <div style={{ display: 'flex', gap: '24px', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: '24px',
+          justifyContent: 'space-between',
+          alignItems: 'start',
+        }}>
         <EmailSection>
           <EmailText bold>From:</EmailText>
           <EmailText compact>{companyName}</EmailText>

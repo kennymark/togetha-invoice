@@ -25,7 +25,7 @@ const activityTypes = [
 
 export type ActivityType = (typeof activityTypes)[number]
 
-export type EntityType = 'customer' | 'job' | 'invoice'
+export type EntityType = 'customer' | 'job' | 'invoice' | 'user'
 
 export default class Activity extends BaseModel {
   @column({ isPrimary: true })
@@ -50,13 +50,13 @@ export default class Activity extends BaseModel {
 
   static async generateSummary(
     activityType: ActivityType,
-    entity: { id: string; name?: string; title?: string; fullName?: string; isUser?: boolean },
+    entity: { id: string; name?: string; title?: string; fullName?: string },
     entityType: EntityType,
   ) {
     const entityName = entity.name || entity.title || entity.fullName || 'Unknown'
 
     // Check if this is a user activity first
-    if (entity.isUser) {
+    if (entityType === 'user') {
       if (activityType === 'passwordUpdated') {
         return 'You updated your password'
       }

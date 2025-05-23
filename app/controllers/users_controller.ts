@@ -246,7 +246,7 @@ export default class UsersController {
       await Activity.create({
         userId: user.id,
         type: 'updated',
-        summary: await Activity.generateSummary('updated', { ...user, isUser: true }),
+        summary: await Activity.generateSummary('updated', user, 'user'),
       })
 
       if (emailChanged) {
@@ -300,7 +300,7 @@ export default class UsersController {
       await Activity.create({
         userId: user.id,
         type: 'passwordUpdated',
-        summary: await Activity.generateSummary('passwordUpdated', { ...user, isUser: true }),
+        summary: await Activity.generateSummary('passwordUpdated', user, 'user'),
       })
 
       await auth.use('web').logout()
