@@ -18,8 +18,6 @@ export default function DevEmails() {
   const [isLoading, setIsLoading] = useState(true)
   const { devEmails } = usePageProps()
 
-  console.log('devEmails', devEmails)
-
   useEffect(() => {
     if (devEmails) {
       setEmails(devEmails)

@@ -16,11 +16,13 @@ export default function CustomerDetailsPage({ customer }: { customer: SingleCust
       name: 'Create job',
       onClick: () => router.visit(`/dashboard/jobs/create?customerId=${customer.id}`),
     },
-    { name: 'Create invoice', onClick: () => alert('Create invoice') },
+    {
+      name: 'Create invoice',
+      onClick: () => router.visit(`/dashboard/invoices/create?customerId=${customer.id}`),
+    },
     {
       name: 'Delete customer',
       onClick: () => {
-        console.log('delete customer')
         onToggle()
       },
     },

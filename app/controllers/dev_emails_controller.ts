@@ -6,7 +6,6 @@ export default class DevEmailsController {
     try {
       const emails = await CacheService.get('emails', [])
 
-      console.log('emails from controller', emails)
       return response.json(emails)
     } catch (error) {
       return response.status(500).json({ error: 'Failed to fetch dev emails' })

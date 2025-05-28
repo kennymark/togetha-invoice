@@ -137,8 +137,6 @@ export default class InvoicesController {
       await trx.rollback()
       logger.error(e)
 
-      console.log(e)
-
       if (e.messages) {
         session.flash('errors', e.messages)
         return response.redirect().back()

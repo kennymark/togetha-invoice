@@ -167,7 +167,6 @@ export default function InvoicesPage({ invoices, stats }: PageProps) {
           emptyMessage='No invoices found.'
           createButtonText='Create Invoice'
           onCreate={() => router.visit(getRoutePath('dashboard_invoices_create'))}
-          onExport={() => {}}
           searchPlaceholder='Search'
           currentPage={currentPage}
           currentPerPage={currentPerPage}

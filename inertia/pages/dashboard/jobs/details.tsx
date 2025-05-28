@@ -25,12 +25,17 @@ export default function JobDetailsPage({ job }: { job: SingleJob }) {
   const { isOpen, onToggle } = useDisclosure()
 
   const actions = [
-    { name: 'Mark as completed', onClick: () => alert('Mark as completed') },
-    { name: 'Create invoice', onClick: () => alert('Create invoice') },
+    {
+      name: `Mark as ${job.status === 'pending' ? 'completed' : 'pending'}`,
+      onClick: () => router.put(`/jobs/${job.id}/mark-as-completed-or-uncompleted`),
+    },
+    {
+      name: 'Create invoice',
+      onClick: () => router.visit(getRoutePath('dashboard_invoices_create')),
+    },
     {
       name: 'Delete job',
       onClick: () => {
-        console.log('delete job')
         onToggle()
       },
     },

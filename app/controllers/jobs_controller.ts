@@ -149,6 +149,23 @@ export default class JobsController {
     }
   }
 
+  async markAsCompletedOrUncompleted({ params, response, session, logger, auth }: HttpContext) {
+    const job = await Job.findOrFail(params.id)
+    logger.info(
+      `Marking job ${job.id} as ${job.status === 'completed' ? 'uncompleted' : 'completed'}`,
+    )
+    job.status = job.status === 'pending' ? 'completed' : 'pending'
+    await job.save()
+    await Activity.create({
+      userId: auth.user?.id,
+      type: 'updated',
+      jobId: job.id,
+      summary: `Marked job ${job.title} as ${job.status === 'pending' ? 'completed' : 'pending'}`,
+    })
+    session.flash('success', { message: 'Job marked as completed' })
+    return response.redirect().toPath(`/dashboard/jobs/${job.id}`)
+  }
+
   async delete({ params, bouncer, response, session, logger, auth }: HttpContext) {
     const job = await Job.findOrFail(params.id)
     try {

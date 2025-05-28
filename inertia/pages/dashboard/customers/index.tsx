@@ -92,7 +92,6 @@ export default function CustomersPage({
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
           onSearch={handleSearch}
-          onExport={() => {}}
           onCreate={() => router.visit(getRoutePath('dashboard_customers_create'))}
           title={undefined}
         />

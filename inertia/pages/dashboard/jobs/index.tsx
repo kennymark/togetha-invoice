@@ -140,7 +140,6 @@ export default function JobsPage({ jobs, stats }: JobsPageProps) {
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
           onSearch={handleSearch}
-          onExport={() => {}}
           onCreate={() => router.visit(getRoutePath('dashboard_jobs_create'))}
           title={undefined}
         />

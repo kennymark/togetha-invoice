@@ -101,6 +101,10 @@ router
         router.post('/', [JobsController, 'create'])
         router.put('/:id', [JobsController, 'update'])
         router.delete('/:id', [JobsController, 'delete'])
+        router.put('/:id/mark-as-completed-or-uncompleted', [
+          JobsController,
+          'markAsCompletedOrUncompleted',
+        ])
       })
       .prefix('/jobs')
 
@@ -124,10 +128,10 @@ router
 
     router
       .group(() => {
-        router.get('/customers', [ReportsController, 'cutsomersExport'])
-        router.get('/jobs', [ReportsController, 'jobsExport'])
-        router.get('/invoices', [ReportsController, 'invoicesExport'])
-        router.get('/payments', [ReportsController, 'paymentsExport'])
+        router.post('/customers', [ReportsController, 'customersExport'])
+        router.post('/jobs', [ReportsController, 'jobsExport'])
+        router.post('/invoices', [ReportsController, 'invoicesExport'])
+        router.post('/payments', [ReportsController, 'paymentsExport'])
       })
       .prefix('/reports')
 

@@ -3,7 +3,7 @@ import { PageHeader } from '../_components/page-header'
 import { StatsCard } from '~/components/reusable/stats-card'
 import { WalletIcon } from 'lucide-react'
 import { Briefcase, Document } from 'iconsax-react'
-import { useState, Suspense, lazy } from 'react'
+import { Suspense, lazy } from 'react'
 import { BaseTable } from '~/components/reusable/table'
 import { useTableState } from '~/hooks/use-table-state'
 import StatsGrider from '~/components/stats-grider'
@@ -12,6 +12,7 @@ import { formatCurrency } from '~/utils/format'
 import { formatDistanceToNow } from 'date-fns'
 import { Link } from '@inertiajs/react'
 import type { Activities, ActivityStats, SingleActivity } from '~/models/activity.model'
+import { useDisclosure } from '~/hooks/use-disclosure'
 
 const EarningsSheet = lazy(() => import('~/pages/dashboard/home/_components/earnings-sheet'))
 
@@ -24,9 +25,7 @@ export default function DashboardPage({
 }) {
   const { user } = usePageProps()
 
-  console.log(activities)
-
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const {
     currentPage,
     currentPerPage,
@@ -73,7 +72,7 @@ export default function DashboardPage({
     {
       key: 'activity',
       title: 'Activity',
-      render: (value: unknown, item: SingleActivity) => {
+      render: (_: unknown, item: SingleActivity) => {
         const link = getActivityLink(item)
         const content = (
           <div className='flex items-center gap-3'>
@@ -101,7 +100,7 @@ export default function DashboardPage({
     {
       key: 'by',
       title: 'By',
-      render: (value: unknown, item: SingleActivity) => {
+      render: (_: unknown, item: SingleActivity) => {
         const link = item.customer ? `/dashboard/customers/${item.customer.id}` : null
         const content = item.customer?.fullName || 'You'
 
@@ -119,7 +118,7 @@ export default function DashboardPage({
     {
       key: 'date',
       title: 'Date',
-      render: (value: unknown, item: SingleActivity) =>
+      render: (_: unknown, item: SingleActivity) =>
         // @ts-ignore
         formatDistanceToNow(item.createdAt, { addSuffix: true }),
     },
@@ -128,7 +127,7 @@ export default function DashboardPage({
   return (
     <>
       <Suspense fallback={null}>
-        {isSheetOpen && <EarningsSheet open={isSheetOpen} setOpen={setIsSheetOpen} />}
+        {isOpen && <EarningsSheet open={isOpen} onClose={onClose} />}
       </Suspense>
       <SEO title='Dashboard' description='A clear view of your business — all in one place.' />
       <div className='flex flex-col gap-8 w-full'>
@@ -142,7 +141,7 @@ export default function DashboardPage({
             label='Total Earnings'
             value={formatCurrency(stats.totalEarnings || 0)}
             description='All time'
-            action={() => setIsSheetOpen(true)}
+            action={onOpen}
           />
           <StatsCard
             icon={<Document color='black' size={20} />}

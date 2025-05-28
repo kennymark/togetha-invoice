@@ -26,7 +26,6 @@ export default class TextSearch extends BaseCommand {
   async run() {
     try {
       const columns = searchObjects[this.tableName]
-      console.log({ columns })
 
       if (!columns) {
         throw new Error(`Table name ${this.tableName} is not defined in searchObjects`)

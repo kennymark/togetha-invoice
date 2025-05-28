@@ -63,9 +63,9 @@ export interface BaseTableProps<T extends { id: string | number }> {
 
 export interface TableContainerProps {
   title?: string
-  onExport?: () => void
   onCreate?: () => void
   createButtonText?: string
+  exportEndpoint?: 'customers' | 'jobs' | 'invoices' | 'payments'
 }
 
 export interface TableHeaderSectionProps {

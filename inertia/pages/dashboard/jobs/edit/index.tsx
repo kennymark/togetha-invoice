@@ -36,10 +36,7 @@ export default function EditJobPage({ job, customers }: EditJobPageProps) {
     },
   })
 
-  console.log('initial data', job)
-
   function handleSubmit(data: JobFormValues) {
-    console.log(data)
     router.put(`/jobs/${job.id}`, data)
   }
 

@@ -29,7 +29,6 @@ export function BaseTable<T extends { id: string | number }>({
   createButtonText,
   isNumbered = false,
   searchPlaceholder,
-  onExport,
   onCreate,
   extraFilters,
   noFilter,
@@ -76,7 +75,7 @@ export function BaseTable<T extends { id: string | number }>({
     <div className={`${containerClassName}`}>
       <TableContainer
         title={title}
-        onExport={onExport}
+        exportEndpoint={resourceName as 'customers' | 'jobs' | 'invoices' | 'payments'}
         onCreate={onCreate}
         createButtonText={createButtonText}
       />

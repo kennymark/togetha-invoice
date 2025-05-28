@@ -2,14 +2,14 @@ import BaseSheet from '~/components/reusable/base-sheet'
 
 interface EarningsSheetProps {
   open: boolean
-  setOpen: (open: boolean) => void
+  onClose: () => void
 }
 
-export default function EarningsSheet({ open, setOpen }: EarningsSheetProps) {
+export default function EarningsSheet({ open, onClose }: EarningsSheetProps) {
   return (
     <BaseSheet
       open={open}
-      setOpen={setOpen}
+      setOpen={onClose}
       title='Earnings Details'
       description='View your earnings breakdown'>
       <div className='p-4'>

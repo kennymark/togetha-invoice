@@ -122,7 +122,6 @@ export default function PaymentsPage() {
           emptyMessage='No payment links found.'
           createButtonText='Create payment link'
           onCreate={() => router.visit(getRoutePath('dashboard_payments_create'))}
-          onExport={() => {}}
           searchPlaceholder='Search'
           currentPage={currentPage}
           currentPerPage={currentPerPage}
