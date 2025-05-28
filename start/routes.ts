@@ -64,7 +64,7 @@ router
       inertia.render('dashboard/payments/create/index'),
     )
 
-    router.get('/finance', ({ inertia }) => inertia.render('dashboard/finance/index'))
+    router.get('/finance', [PaymentsController, 'renderFinancePage'])
 
     router.get('/settings', [UsersController, 'settings'])
   })
