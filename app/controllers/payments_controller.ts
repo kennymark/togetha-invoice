@@ -1,5 +1,4 @@
 import Payment from '#models/payment'
-import Invoice from '#models/invoice'
 import { validateQueryParams } from '#utils/vine'
 import { createPaymentValidator, updatePaymentValidator } from '#validators/payment_validator'
 import type { HttpContext } from '@adonisjs/core/http'
